@@ -36,13 +36,13 @@ const readContent = async (filePath) => {
 };
 
 const generateOffers = (count, titles, categories, sentences) => (
-  Array(count).fill({}).map(() => ({
+  Array.from({length:count}, (() => ({
     title: titles[getRandomInt(0, titles.length - 1)],
     announce: getNewArray(sentences, 5).join(` `),
     fullText: getNewArray(sentences, sentences.length).join(` `),
     createdDate: getFormatStringDate(getRandomInt(CreateDate.DATE_MIN, CreateDate.DATE_MAX)),
     category: getNewArray(categories, categories.length),
-  }))
+  })))
 );
 
 module.exports = {
@@ -57,7 +57,7 @@ module.exports = {
 
     if (countOffer > 1000) {
       console.log(`Не больше 1000 публикаций`);
-      process.exit(ExitCode.success);
+      process.exit(ExitCode.ERROR);
     }
 
     const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences));
@@ -65,8 +65,10 @@ module.exports = {
     try {
       await fs.writeFile(FILE_NAME, content);
       console.log(chalk.green(`Operation success. File created.`));
+      return;
     } catch (err) {
       console.error(chalk.red(`Can't write data to file...`));
+      process.exit(ExitCode.ERROR);
     }
 
   }

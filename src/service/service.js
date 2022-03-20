@@ -12,7 +12,6 @@ const [userCommand] = userArguments;
 
 if (userArguments.length === 0 || !Cli[userCommand]) {
   Cli[DEFAULT_COMMAND].run();
-  process.exit(ExitCode.success);
+} else {
+  Cli[userCommand].run(userArguments.slice(1));
 }
-
-Cli[userCommand].run(userArguments.slice(1));

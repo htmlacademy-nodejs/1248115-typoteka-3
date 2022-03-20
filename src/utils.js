@@ -7,32 +7,30 @@ const getRandomInt = (min, max) => {
 };
 
 const shuffle = (someArray) => {
-  for (let i = someArray.length - 1; i > 0; i--) {
+  const newSomeArray = someArray.slice();
+  for (let i = newSomeArray.length - 1; i > 0; i--) {
     const randomPosition = Math.floor(Math.random() * i);
-    [someArray[i], someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
+    [newSomeArray[i], newSomeArray[randomPosition]] = [newSomeArray[randomPosition], newSomeArray[i]];
   }
 
-  return someArray;
+  return newSomeArray;
 };
 
 const getFormatStringDate = (ms) => {
   const date = new Date(ms);
-  const pieceDate = [
-    `0${date.getMonth() + 1}`,
-    `0${date.getDate()}`,
-    `0${date.getHours()}`,
-    `0${date.getMinutes()}`,
-    `0${date.getSeconds()}`,
-  ].map((item) => item.slice(-2));
+  const piecesDate = [
+    `${date.getMonth() + 1}`.padStart(2, `0`),
+    `${date.getDate()}`.padStart(2, `0`),
+    `${date.getHours()}`.padStart(2, `0`),
+    `${date.getMinutes()}`.padStart(2, `0`),
+    `${date.getSeconds()}`.padStart(2, `0`),
+  ];
 
-  return `${date.getFullYear()}-${pieceDate[0]}-${pieceDate[1]} ${pieceDate[2]}:${pieceDate[3]}:${pieceDate[4]}`;
+  return `${date.getFullYear()}-${piecesDate[0]}-${piecesDate[1]} ${piecesDate[2]}:${piecesDate[3]}:${piecesDate[4]}`;
 };
 
 const getNewArray = (array, numberLength) => {
-  const newArray = shuffle(array.slice());
-  newArray.length = getRandomInt(1, numberLength);
-
-  return newArray;
+  return shuffle(array).slice(0, getRandomInt(1, numberLength));
 };
 
 module.exports = {
