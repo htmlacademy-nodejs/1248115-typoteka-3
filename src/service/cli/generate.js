@@ -20,8 +20,10 @@ const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 
+const MS_IN_MONTHS = 3 * 30 * 24 * 3600 * 1000;
+
 const CreateDate = {
-  DATE_MIN: new Date().getTime() - 3 * 30 * 24 * 3600 * 1000,
+  DATE_MIN: new Date().getTime() - MS_IN_MONTHS,
   DATE_MAX: new Date().getTime(),
 };
 
@@ -36,7 +38,7 @@ const readContent = async (filePath) => {
 };
 
 const generateOffers = (count, titles, categories, sentences) => (
-  Array.from({length:count}, (() => ({
+  Array.from({length: count}, (() => ({
     title: titles[getRandomInt(0, titles.length - 1)],
     announce: getNewArray(sentences, 5).join(` `),
     fullText: getNewArray(sentences, sentences.length).join(` `),
@@ -65,7 +67,6 @@ module.exports = {
     try {
       await fs.writeFile(FILE_NAME, content);
       console.log(chalk.green(`Operation success. File created.`));
-      return;
     } catch (err) {
       console.error(chalk.red(`Can't write data to file...`));
       process.exit(ExitCode.ERROR);
