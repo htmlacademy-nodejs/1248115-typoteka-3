@@ -1,5 +1,6 @@
 'use strict';
 
+const {nanoid} = require(`nanoid`);
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 
@@ -10,15 +11,18 @@ const {
 } = require(`../../utils`);
 
 const {
-  ExitCode
+  ExitCode,
+  MAX_ID_LENGTH,
 } = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
+const MAX_COMMENTS = 4;
 const FILE_NAME = `mocks.json`;
 
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
+const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const MS_IN_MONTHS = 3 * 30 * 24 * 3600 * 1000;
 
@@ -37,13 +41,22 @@ const readContent = async (filePath) => {
   }
 };
 
-const generateOffers = (count, titles, categories, sentences) => (
+const generateComments = (count, comments) => (
   Array.from({length: count}, (() => ({
+    id: nanoid(MAX_ID_LENGTH),
+    text: getNewArray(comments, 3).join(` `),
+  })))
+);
+
+const generateOffers = (count, titles, categories, sentences, comments) => (
+  Array.from({length: count}, (() => ({
+    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     announce: getNewArray(sentences, 5).join(` `),
     fullText: getNewArray(sentences, sentences.length).join(` `),
     createdDate: getFormatStringDate(getRandomInt(CreateDate.DATE_MIN, CreateDate.DATE_MAX)),
     category: getNewArray(categories, categories.length),
+    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
   })))
 );
 
@@ -53,6 +66,7 @@ module.exports = {
     const sentences = await readContent(FILE_SENTENCES_PATH);
     const titles = await readContent(FILE_TITLES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
+    const comments = await readContent(FILE_COMMENTS_PATH);
 
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
@@ -62,7 +76,7 @@ module.exports = {
       process.exit(ExitCode.ERROR);
     }
 
-    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences));
+    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences, comments));
 
     try {
       await fs.writeFile(FILE_NAME, content);

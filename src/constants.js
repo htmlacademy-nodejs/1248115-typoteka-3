@@ -4,6 +4,8 @@ const DEFAULT_COMMAND = `--help`;
 
 const USER_ARGV_INDEX = 2;
 
+const MAX_ID_LENGTH = 6;
+
 const ExitCode = {
   ERROR: 1,
   SUCCESS: 0,
@@ -19,5 +21,6 @@ const HttpCode = {
   BAD_REQUEST: 400,
 };
 
-module.exports = {DEFAULT_COMMAND, USER_ARGV_INDEX, ExitCode, HttpCode};
+const API_PREFIX = `/api`;
 
+module.exports = {DEFAULT_COMMAND, USER_ARGV_INDEX, ExitCode, HttpCode, MAX_ID_LENGTH, API_PREFIX};
