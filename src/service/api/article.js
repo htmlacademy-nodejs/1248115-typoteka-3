@@ -6,9 +6,9 @@ const articleValidator = require(`../middlewares/article-validator`);
 const articleExist = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
 
-const route = new Router();
-
 module.exports = (app, articleService, commentService) => {
+  const route = new Router();
+
   app.use(`/articles`, route);
 
   route.get(`/`, (req, res) => {
@@ -29,14 +29,14 @@ module.exports = (app, articleService, commentService) => {
       .json(article);
   });
 
-  route.post(`/`, articleValidator, (req, res) => {
+  route.post(`/`, articleValidator.validator, (req, res) => {
     const article = articleService.create(req.body);
 
     return res.status(HttpCode.CREATED)
       .json(article);
   });
 
-  route.put(`/:articleId`, articleValidator, (req, res) => {
+  route.put(`/:articleId`, articleValidator.validator, (req, res) => {
     const {articleId} = req.params;
     const existarticle = articleService.findOne(articleId);
 
@@ -87,7 +87,7 @@ module.exports = (app, articleService, commentService) => {
       .json(deletedComment);
   });
 
-  route.post(`/:articleId/comments`, [articleExist(articleService), commentValidator], (req, res) => {
+  route.post(`/:articleId/comments`, [articleExist(articleService), commentValidator.validator], (req, res) => {
     const {article} = res.locals;
     const comment = commentService.create(article, req.body);
 

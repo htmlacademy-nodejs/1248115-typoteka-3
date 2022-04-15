@@ -1,5 +1,7 @@
 'use strict';
 
+const {HttpCode} = require(`./constants`);
+
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -33,9 +35,30 @@ const getNewArray = (array, numberLength) => {
   return shuffle(array).slice(0, getRandomInt(1, numberLength));
 };
 
+class KeyValidator {
+  constructor (keys) {
+    this._keys = keys;
+    this.validator = this.validator.bind(this);
+  }
+
+  validator(req, res, next) {
+    const newObject = req.body;
+    const keys = Object.keys(newObject);
+    const keysExists = this._keys.every((key) => keys.includes(key));
+
+    if (!keysExists) {
+      res.status(HttpCode.BAD_REQUEST)
+        .send(`Bad request`);
+    }
+
+    next();
+  }
+}
+
 module.exports = {
   getRandomInt,
   getFormatStringDate,
   getNewArray,
   shuffle,
+  KeyValidator,
 };
