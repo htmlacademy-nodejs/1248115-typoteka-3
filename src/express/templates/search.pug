@@ -4,13 +4,42 @@ block content
 
   main
     section.search-page
-      .search-page__wrapper
-        h1 Поиск
-        .search.search-page__form
-          form(action='#' method='get')
-            label
-              input(type='text' name='query' placeholder='Что ищем?' value='Путешествия')
-            button.search__button.button.button--transparent(type='submit') Найти
+
+      if search
+        if results.length > 0
+          .search-page__wrapper
+            h1 Поиск
+            .search.search-page__form
+              form(action='/search' method='get')
+                label
+                  input(type='search' name='search' placeholder='Что ищем?' value= `${search}`)
+                button.search__button.button.button--transparent(type='submit') Найти
+
+              each result in results
+                .search__result
+                  time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
+                  a.search__link(href='#') #{result.title}
+        else
+          .search-page__wrapper.search-page__wrapper--empty
+            h1 Поиск
+            .search.search-page__form
+              form(action='/search' method='get')
+                label
+                  input(type='search' name='search' placeholder='Что ищем?' value= `${search}`)
+                button.search__button.button.button--transparent(type='submit') Найти
+
+              p.search-page__empty Ничего не нашлось
+
+      else
+        .search-page__wrapper
+          h1 Поиск
+          .search.search-page__form
+            form(action='/search' method='get')
+              label
+                input(type='search' name='search' placeholder='Что ищем?' value= '')
+              button.search__button.button.button--transparent(type='submit') Найти
+
+//-
           .search__result
             time.search__date(datetime='2019-03-21T20:33') 21.03.2019, 20:33
             a.search__link
@@ -18,10 +47,4 @@ block content
               b путешествия
               |  на смартфон Mate 30 Pro без сервисов
               |                 Google
-          .search__result
-            time.search__date(datetime='2019-03-21T20:33') 21.03.2019, 20:33
-            a.search__link
-              | «Яндекс.Метрика» запустила
-              b путешествия
-              |  сервис для оценки эффективности
-              |                 баннеров и видеорекламы в реальном времени
+

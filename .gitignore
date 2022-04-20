@@ -16,3 +16,11 @@ build/
 
 # Моки
 mocks.json
+
+# Файл с переменными окружения
+.env
+
+# Директория с загруженными изображениями
+src/express/upload/img/*.*
+
+!src/express/upload/img/.gitkeep

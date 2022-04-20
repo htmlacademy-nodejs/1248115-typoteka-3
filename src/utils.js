@@ -36,7 +36,7 @@ const getNewArray = (array, numberLength) => {
 };
 
 class KeyValidator {
-  constructor (keys) {
+  constructor(keys) {
     this._keys = keys;
     this.validator = this.validator.bind(this);
   }

@@ -43,10 +43,10 @@ module.exports = {
       await getMockData();
 
       const server = app.listen(port);
-      server.on('listening', () => {
+      server.on(`listening`, () => {
         logger.info(`Listening to connections on ${port}`);
       });
-      server.on('error', () => {
+      server.on(`error`, (err) => {
         logger.error(`An error occured on server creation: ${err.message}`);
       });
     } catch (err) {
