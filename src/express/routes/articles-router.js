@@ -41,7 +41,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
 });
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
-//articlesRouter.get(`/add`, (req, res) => res.render(`post`));
+
 articlesRouter.get(`/add`, async (req, res) => {
   const article = {
     createdDate: ``,
@@ -60,21 +60,13 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
     api.getArticle(id),
     api.getCategories()
   ]);
-  //const article = await api.getArticle(id);
   res.render(`post`, {article, categories});
 });
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  //const [article, categories] = await Promise.all([
-  //  api.getArticle(id),
-  //  api.getCategories()
-  //]);
   const article = await api.getArticle(id);
   res.render(`post-detail`, {article});
 });
-
-//-articlesRouter.get(`/edit/:id`, (req, res) => res.render(`post-detail`));
-//-articlesRouter.get(`/:id`, (req, res) => res.render(`post-detail`));
 
 module.exports = articlesRouter;
