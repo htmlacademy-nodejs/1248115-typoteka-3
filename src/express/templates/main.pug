@@ -98,8 +98,10 @@ block content
               each category in item.category
                 li.preview__breadcrumbs-item
                   a.preview__breadcrumbs-link(href='#') #{category}
-            .preview__background
-                img.preview__background-image(src='/img/skyscraper@1x.jpg' srcset='/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба' width='460' height='240')
+            if (item.picture)
+              .preview__background
+                //-img.preview__background-image(src='/img/skyscraper@1x.jpg' srcset='/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба' width='460' height='240')
+                img.preview__background-image(src=`/img/${item.picture}` alt=`${item.category[0]}` width='460' height='240')
             time.preview__time(datetime='2019-03-21T20:33') #{item.createdDate}
             h3.preview__name
                 a.preview__name-link(href='#') #{item.title}

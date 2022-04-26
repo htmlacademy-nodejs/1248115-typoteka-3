@@ -43,22 +43,35 @@ class KeyValidator {
 
   validator(req, res, next) {
     const newObject = req.body;
-    const keys = Object.keys(newObject);
-    const keysExists = this._keys.every((key) => keys.includes(key));
 
-    if (!keysExists) {
-      res.status(HttpCode.BAD_REQUEST)
+    const isValue = (field) => {
+      if (!field) {
+        return false;
+      }
+      if (field.length === 0) {
+        return false;
+      }
+      return true;
+    };
+
+    const valuesExists = this._keys.every((key) => isValue(newObject[key]));
+
+    if (!valuesExists) {
+      return res.status(HttpCode.BAD_REQUEST)
         .send(`Bad request`);
     }
 
-    next();
+    return next();
   }
 }
+
+const ensureArray = (value) => value ? Object.keys(value) : [];
 
 module.exports = {
   getRandomInt,
   getFormatStringDate,
   getNewArray,
   shuffle,
+  ensureArray,
   KeyValidator,
 };

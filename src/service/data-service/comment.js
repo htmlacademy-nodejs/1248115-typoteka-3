@@ -10,7 +10,7 @@ class CommentService {
     }, comment);
 
     article.comments.push(newComment);
-    return comment;
+    return newComment;
   }
 
   drop(article, commentId) {

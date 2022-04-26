@@ -31,6 +31,8 @@ const CreateDate = {
   DATE_MAX: new Date().getTime(),
 };
 
+const IMAGES = [`skyscraper@1x.jpg`, `forest@1x.jpg`, `sea@1x.jpg`, ``];
+
 const readContent = async (filePath) => {
   try {
     const content = await fs.readFile(filePath, `utf8`);
@@ -57,6 +59,7 @@ const generateOffers = (count, titles, categories, sentences, comments) => (
     createdDate: getFormatStringDate(getRandomInt(CreateDate.DATE_MIN, CreateDate.DATE_MAX)),
     category: getNewArray(categories, categories.length),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+    picture: IMAGES[getRandomInt(0, 3)],
   })))
 );
 
