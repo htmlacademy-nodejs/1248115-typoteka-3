@@ -50,7 +50,7 @@ const generateComments = (count, comments) => (
   })))
 );
 
-const generateOffers = (count, titles, categories, sentences, comments) => (
+const generateArticles = (count, titles, categories, sentences, comments) => (
   Array.from({length: count}, (() => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
@@ -72,14 +72,14 @@ module.exports = {
     const comments = await readContent(FILE_COMMENTS_PATH);
 
     const [count] = args;
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    if (countOffer > 1000) {
+    if (countArticle > 1000) {
       console.log(`Не больше 1000 публикаций`);
       process.exit(ExitCode.ERROR);
     }
 
-    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences, comments));
+    const content = JSON.stringify(generateArticles(countArticle, titles, categories, sentences, comments));
 
     try {
       await fs.writeFile(FILE_NAME, content);
