@@ -18,6 +18,7 @@ module.exports = {
       --generate <count>    формирует файл mocks.json
       --fill <count>        формирует файл fill-db.sql
       --server <port>       запускает сервер на port
+      --filldb <count>      наполняет БД
     `;
 
     console.log(chalk.gray(text));

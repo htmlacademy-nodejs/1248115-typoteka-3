@@ -5,8 +5,10 @@ const generate = require(`./generate`);
 const version = require(`./version`);
 const server = require(`./server`);
 const fill = require(`./fill`);
+const filldb = require(`./filldb`);
 
 const Cli = {
+  [filldb.name]: filldb,
   [generate.name]: generate,
   [help.name]: help,
   [version.name]: version,

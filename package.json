@@ -8,6 +8,7 @@
     "start::debug": "cross-env NODE_ENV=development nodemon -r dotenv/config ./src/service/service.js --server 3000",
     "start.service": "node ./src/service/service.js",
     "start-front-server": "nodemon ./src/express/express.js",
+    "start.service-db": "node -r dotenv/config ./src/service/service.js --filldb 5",
     "test": "npm run eslint && npm run jest",
     "jest": "jest",
     "eslint": "eslint --ext .js src/"
