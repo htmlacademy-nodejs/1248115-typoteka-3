@@ -13,9 +13,7 @@ const {
 
 const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);
-
-const defineModels = require(`../models`);
-const Aliase = require(`../models/aliase`);
+const initDatabase = require(`../lib/init-db`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
@@ -68,18 +66,10 @@ module.exports = {
     }
     logger.info(`Connection to database established`);
 
-    const {Category, Article} = defineModels(sequelize);
-
-    await sequelize.sync({force: true});
-
     const sentences = await readContent(FILE_SENTENCES_PATH);
     const titles = await readContent(FILE_TITLES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const comments = await readContent(FILE_COMMENTS_PATH);
-
-    const categoryModels = await Category.bulkCreate(
-        categories.map((item) => ({name: item}))
-    );
 
     const [count] = args;
     const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
@@ -89,12 +79,8 @@ module.exports = {
       process.exit(ExitCode.ERROR);
     }
 
-    const articles = generateArticles(countArticle, titles, categoryModels, sentences, comments);
-    const articlePromises = articles.map(async (article) => {
-      const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
-      await articleModel.addCategories(article.categories);
-    });
-    await Promise.all(articlePromises);
+    const articles = generateArticles(countArticle, titles, categories, sentences, comments);
+
+    return initDatabase(sequelize, {articles, categories});
   }
 };
-

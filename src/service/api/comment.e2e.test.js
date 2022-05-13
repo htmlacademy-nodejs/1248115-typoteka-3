@@ -5,8 +5,8 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const initDB = require(`../lib/init-db`);
-const category = require(`./category`);
-const DataService = require(`../data-service/category`);
+const comment = require(`./comment`);
+const DataService = require(`../data-service/comment`);
 
 const {HttpCode} = require(`../../constants`);
 
@@ -114,40 +114,20 @@ app.use(express.json());
 
 beforeAll(async () => {
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
-  category(app, new DataService(mockDB));
+  comment(app, new DataService(mockDB));
 });
 
-describe(`API returns category list`, () => {
+describe(`API returns comment list`, () => {
 
   let response;
 
   beforeAll(async () => {
     response = await request(app)
-      .get(`/categories`);
+      .get(`/comments`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns list of 12 categories`, () => expect(response.body.length).toBe(12));
-
-  test(`Category names are "Деревья", "За жизнь", "Без рамки", "Разное", "IT",
-      "Музыка", "Кино", "Программирование", "Железо", "Авто", "Игрушки", "Мебель"`,
-  () => expect(response.body.map((it) => it.name)).toEqual(
-      expect.arrayContaining([
-        `Деревья`,
-        `За жизнь`,
-        `Без рамки`,
-        `Разное`,
-        `IT`,
-        `Музыка`,
-        `Кино`,
-        `Программирование`,
-        `Железо`,
-        `Авто`,
-        `Игрушки`,
-        `Мебель`
-      ])
-  )
-  );
+  test(`Returns list of 13 comments`, () => expect(response.body.length).toBe(13));
 
 });

@@ -10,7 +10,6 @@ const define = (sequelize) => Article.init({
   fullText: {
     // eslint-disable-next-line new-cap
     type: DataTypes[`STRING`](1000),
-    allowNull: false
   },
   // eslint-disable-next-line new-cap
   picture: DataTypes[`STRING`](50),

@@ -24,7 +24,6 @@ mainRouter.get(`/search-page`, (req, res) => res.render(`search`, {results: [], 
 mainRouter.get(`/search`, async (req, res) => {
   try {
     const {search} = req.query;
-    console.log(search);
     const results = await api.search(search);
     res.render(`search`, {
       results,
