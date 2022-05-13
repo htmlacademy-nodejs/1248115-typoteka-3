@@ -12,10 +12,8 @@ myRouter.get(`/`, async (req, res) => {
 });
 
 myRouter.get(`/comments`, async (req, res) => {
-  const articles = await api.getArticles();
-  const allComments = articles.reduce((acc, article) => acc.concat(article.comments), []);
-
-  res.render(`comments`, {articles, allComments});
+  const comments = await api.getComments();
+  res.render(`comments`, {comments});
 });
 
 myRouter.get(`/categories`, async (req, res) => {

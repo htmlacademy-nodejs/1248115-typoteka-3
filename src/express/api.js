@@ -21,28 +21,33 @@ class API {
     return response.data;
   }
 
-  getArticles() {
-    return this._load(`/articles`);
+  getArticles({comments} = {}) {
+    return this._load(`/articles`, {params: {comments}});
   }
 
-  getArticle(id) {
-    return this._load(`/articles/${id}`);
+  getArticle(id, comments) {
+    return this._load(`/articles/${id}`, {params: {comments}});
   }
 
   search(query) {
     return this._load(`/search`, {params: {query}});
   }
 
-  async getCategories() {
-    return this._load(`/categories`);
+  getCategories(count) {
+    return this._load(`/categories`, {params: {count}});
   }
 
-  async createArticle(data) {
+  createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,
       data
     });
   }
+
+  getComments() {
+    return this._load(`/comments`);
+  }
+
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);

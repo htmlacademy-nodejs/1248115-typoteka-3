@@ -27,17 +27,17 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
   const article = {
     picture: file ? file.filename : ``,
-    createdDate: body.date,
     announce: body.announcement,
     fullText: body[`full-text`],
     title: body.title,
-    category: ensureArray(body.category),
+    categories: ensureArray(body.category),
   };
   try {
     await api.createArticle(article);
     res.redirect(`/my`);
   } catch (error) {
     const categories = await api.getCategories();
+    article.categories = article.categories.map((item) => ({id: +item}));
     res.render(`post`, {article, categories});
   }
 });
@@ -47,11 +47,10 @@ articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-catego
 articlesRouter.get(`/add`, async (req, res) => {
   const article = {
     picture: ``,
-    createdDate: ``,
     announce: ``,
     fullText: ``,
     title: ``,
-    category: [],
+    categories: [],
   };
   const categories = await api.getCategories();
   res.render(`post`, {article, categories});
@@ -68,8 +67,11 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const article = await api.getArticle(id);
-  res.render(`post-detail`, {article});
+  const [article, categories] = await Promise.all([
+    api.getArticle(id, true),
+    api.getCategories(true)
+  ]);
+  res.render(`post-detail`, {article, categories});
 });
 
 module.exports = articlesRouter;

@@ -2,6 +2,6 @@
 
 const {KeyValidator} = require(`../../utils`);
 
-const articleKeys = [`category`, `title`, `announce`, `createdDate`];
+const articleKeys = [`categories`, `title`, `announce`];
 
 module.exports = new KeyValidator(articleKeys);

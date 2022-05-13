@@ -9,6 +9,12 @@ block content
     section.main-page__theme-list
       h2.visually-hidden Список тем
       ul.themes
+        each category of categories
+          li.themes__item
+            a.themes__item-link(href='#')
+              | #{category.name}
+              sup #{category.count}
+      //-ul.themes
         li.themes__item
           a.themes__item-link(href='#')
             | Автомобили
@@ -95,21 +101,21 @@ block content
         each item in articles
           li.preview__item
             ul.preview__breadcrumbs(style='flex-wrap: wrap;')
-              each category in item.category
+              each category in item.categories
                 li.preview__breadcrumbs-item
-                  a.preview__breadcrumbs-link(href='#') #{category}
+                  a.preview__breadcrumbs-link(href='#') #{category.name}
             if (item.picture)
               .preview__background
                 //-img.preview__background-image(src='/img/skyscraper@1x.jpg' srcset='/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба' width='460' height='240')
-                img.preview__background-image(src=`/img/${item.picture}` alt=`${item.category[0]}` width='460' height='240')
-            time.preview__time(datetime='2019-03-21T20:33') #{item.createdDate}
+                img.preview__background-image(src=`/img/${item.picture}` alt=`${item.title}` width='460' height='240')
+            time.preview__time(datetime='2019-03-21T20:33') #{item.createdAt}
             h3.preview__name
                 a.preview__name-link(href='#') #{item.title}
             p.preview__text #{item.announce}
             a.preview__comment(href='#')
                 | Комментарии
                 span.preview__cloud
-                b.preview__comment-count #{item.comments.length}
+                  b.preview__comment-count #{item.comments.length}
 
     .preview__toggle-wrapper
       ul.preview__pagination.pagination

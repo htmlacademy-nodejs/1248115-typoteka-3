@@ -18,7 +18,7 @@ block content
           if (index === categories.length - 1)
             li.category__list-item.category__list-item--last
               form(action='#' method='POST')
-                input(id=`modify-form-category-${count}` type='text' name=`category-${count}` value= category)
+                input(id=`modify-form-category-${count}` type='text' name=`category-${count}` value= category.name)
                 label(for=`modify-form-category-${count}`)
                 - count++
                   span.visually-hidden Редактировать категорию
@@ -27,7 +27,7 @@ block content
           else
             li.category__list-item
               form(action='#' method='POST')
-                input(id=`modify-form-category-${count}` type='text' name=`category-${count}` value= category)
+                input(id=`modify-form-category-${count}` type='text' name=`category-${count}` value= category.name)
                 label(for=`modify-form-category-${count}`)
                 - count++
                   span.visually-hidden Редактировать категорию

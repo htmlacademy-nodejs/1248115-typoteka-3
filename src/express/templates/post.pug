@@ -28,7 +28,7 @@ block content
                     input(type='text' name='title' placeholder='Заголовок' required='' value=`${article.title ? article.title : ''}`)
                 .form__field.form__field--post-image
                   label
-                    input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='')
+                    input#image-name-field(type='text' name='photo' placeholder='Фотография' value=`${article.picture ? article.picture : ''}` readonly='')
                   .form__image-loader.form__image-loader--publication
                     label
                       input.visually-hidden(type='file' name='upload')
@@ -36,8 +36,8 @@ block content
                 .new-publication__category-wrapper
                   each item in categories
                     .new-publication__checkbox
-                      input(id=`checkbox-${count}` type='checkbox' name=`category[${item}]` checked=article.category.includes(item))
-                      label(for=`checkbox-${count}`) #{item}
+                      input(id=`checkbox-${count}` type='checkbox' name=`category[${item.id}]` checked=article.categories.some((obj) => obj.id === item.id))
+                      label(for=`checkbox-${count}`) #{item.name}
                       - count++
 
                   //-.new-publication__checkbox.new-publication__checkbox--auto
