@@ -12,7 +12,7 @@ const {
 } = require(`../../constants`);
 
 const {getLogger} = require(`../lib/logger`);
-const sequelize = require(`../lib/sequelize`);
+const createSequelize = require(`../lib/sequelize`);
 const initDatabase = require(`../lib/init-db`);
 
 const DEFAULT_COUNT = 1;
@@ -57,6 +57,8 @@ const generateArticles = (count, titles, categories, sentences, comments) => (
 module.exports = {
   name: `--filldb`,
   async run(args) {
+    const sequelize = createSequelize();
+
     try {
       logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();

@@ -13,18 +13,21 @@ const {
   CommentService,
 } = require(`../data-service`);
 
-const sequelize = require(`../lib/sequelize`);
 const defineModels = require(`../models`);
 
-const app = new Router();
+const createApp = (sequelize) => {
+  const app = new Router();
 
-defineModels(sequelize);
+  defineModels(sequelize);
 
-(() => {
-  category(app, new CategoryService(sequelize));
-  search(app, new SearchService(sequelize));
-  article(app, new ArticleService(sequelize), new CommentService(sequelize));
-  comment(app, new CommentService(sequelize));
-})();
+  (() => {
+    category(app, new CategoryService(sequelize));
+    search(app, new SearchService(sequelize));
+    article(app, new ArticleService(sequelize), new CommentService(sequelize));
+    comment(app, new CommentService(sequelize));
+  })();
 
-module.exports = app;
+  return app;
+};
+
+module.exports = createApp;
