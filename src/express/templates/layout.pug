@@ -1,4 +1,41 @@
 doctype html
+
+mixin pagination(page, totalPages, width, prefix)
+    -
+      let start = page - width;
+      let end = page + width;
+      if(start < 1){
+        end += 1 - start;
+        start = 1;
+      }
+      if(end > totalPages){
+        start -= end - totalPages;
+        end = totalPages;
+      }
+      if(start < 1){
+        start = 1;
+      }
+      let i = start - 1
+    .preview__toggle-wrapper
+      ul.preview__pagination.pagination
+        li
+          if start > 1
+            a.pagination__button.button.button--backwards(href=`${prefix}page=${page - 1}` aria-label='Страница назад')
+          else
+            a.pagination__button.button.button--backwards.button--disabled(aria-label='Страница назад')
+        while i++ < end
+          if i === page
+            li.pagination__item.pagination__item--active
+              a= i
+          else
+            li.pagination__item
+              a(href=`${prefix}page=${i}`)= i
+        li
+          if end < totalPages
+            a.pagination__button.button.button--forward(href=`${prefix}page=${page + 1}` aria-label='Страница вперед')
+          else
+            a.pagination__button.button.button--forward.button--disabled(aria-label='Страница вперед')
+
 html(lang='ru')
   head
     meta(charset='utf-8')
@@ -10,6 +47,7 @@ html(lang='ru')
     link(rel='preload' href='/fonts/Inter-Medium.woff2' as='font' crossorigin='anonymous')
     link(rel='preload' href='/fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='/css/style.min.css')
+
   body
     .wrapper
       include partials/header-guest.pug
