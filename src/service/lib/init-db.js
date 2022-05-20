@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const defineModels = require(`../models`);
 const Aliase = require(`../models/aliase`);

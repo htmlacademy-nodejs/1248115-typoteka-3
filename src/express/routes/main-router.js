@@ -1,35 +1,18 @@
-"use strict";
+'use strict';
 
 const {Router} = require(`express`);
+const asyncHandler = require(`express-async-handler`);
+const api = require(`../api`).getAPI();
 
 const mainRouter = new Router();
 
-const api = require(`../api`).getAPI();
-
 const OFFERS_PER_PAGE = 8;
-/*
-mainRouter.get(`/`, async (req, res) => {
-  const [
-    articles,
-    categories
-  ] = await Promise.all([
-    api.getArticles({comments: true}),
-    api.getCategories(true)
-  ]);
 
-  res.render(`main`, {articles, categories});
-});
-*/
-
-mainRouter.get(`/`, async (req, res) => {
-  // получаем номер страницы
+mainRouter.get(`/`, asyncHandler(async (req, res) => {
   let {page = 1} = req.query;
   page = +page;
 
-  // количество запрашиваемых объявлений равно количеству объявлений на странице
   const limit = OFFERS_PER_PAGE;
-
-  // количество объявлений, которое нам нужно пропустить - это количество объявлений на предыдущих страницах
   const offset = (page - 1) * OFFERS_PER_PAGE;
   const [
     {count, articles},
@@ -39,12 +22,10 @@ mainRouter.get(`/`, async (req, res) => {
     api.getCategories(true)
   ]);
 
-  // количество страниц — это общее количество объявлений, поделённое на количество объявлений на странице (с округлением вверх)
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
 
-  // передадим все эти данные в шаблон
   res.render(`main`, {articles, page, totalPages, categories});
-});
+}));
 
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up`));
 mainRouter.get(`/login`, (req, res) => res.render(`login`));

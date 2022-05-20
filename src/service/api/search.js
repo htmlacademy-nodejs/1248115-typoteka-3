@@ -2,13 +2,14 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
+const asyncHandler = require(`express-async-handler`);
 
 const route = new Router();
 
 module.exports = (app, service) => {
   app.use(`/search`, route);
 
-  route.get(`/`, async (req, res) => {
+  route.get(`/`, asyncHandler(async (req, res) => {
     const {query = ``} = req.query;
 
     if (!query) {
@@ -21,5 +22,5 @@ module.exports = (app, service) => {
 
     res.status(searchStatus)
       .json(searchResults);
-  });
+  }));
 };

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
@@ -6,6 +6,7 @@ const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 const {ensureArray} = require(`../../utils`);
+const asyncHandler = require(`express-async-handler`);
 
 const UPLOAD_DIR = `../upload/img/`;
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
@@ -23,7 +24,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
+articlesRouter.post(`/add`, upload.single(`upload`), asyncHandler(async (req, res) => {
   const {body, file} = req;
   const article = {
     picture: file ? file.filename : ``,
@@ -40,11 +41,11 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     article.categories = article.categories.map((item) => ({id: +item}));
     res.render(`post`, {article, categories});
   }
-});
+}));
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
 
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, asyncHandler(async (req, res) => {
   const article = {
     picture: ``,
     announce: ``,
@@ -54,24 +55,24 @@ articlesRouter.get(`/add`, async (req, res) => {
   };
   const categories = await api.getCategories();
   res.render(`post`, {article, categories});
-});
+}));
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, asyncHandler(async (req, res) => {
   const {id} = req.params;
   const [article, categories] = await Promise.all([
     api.getArticle(id),
     api.getCategories()
   ]);
   res.render(`post`, {article, categories});
-});
+}));
 
-articlesRouter.get(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id`, asyncHandler(async (req, res) => {
   const {id} = req.params;
   const [article, categories] = await Promise.all([
     api.getArticle(id, true),
     api.getCategories(true)
   ]);
   res.render(`post-detail`, {article, categories});
-});
+}));
 
 module.exports = articlesRouter;
