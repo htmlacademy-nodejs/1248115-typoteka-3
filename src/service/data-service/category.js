@@ -35,11 +35,6 @@ class CategoryService {
       return this._Category.findAll({raw: true});
     }
   }
-  /*
-  async findAll() {
-    return await this._Category.findAll({raw: true});
-  }
-  */
 }
 
 module.exports = CategoryService;

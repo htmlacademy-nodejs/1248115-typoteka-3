@@ -25,6 +25,18 @@ const API_PREFIX = `/api`;
 
 const ENV = `production`;
 
+const HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
+const Action = {
+  ADD: `add`,
+  EDIT: `edit`
+};
+
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
@@ -32,5 +44,7 @@ module.exports = {
   HttpCode,
   MAX_ID_LENGTH,
   API_PREFIX,
-  ENV
+  ENV,
+  HttpMethod,
+  Action
 };

@@ -46,6 +46,7 @@ block content
               | поругать
               | — к примеру интерфейс
               | публикации приложения в AppStore, для которого я уже неделю восстановливаю свой аккаунт разработчика.
+            p #{article.announce}
             p #{article.fullText}
 
       .post__wrapper.post__wrapper--comments
@@ -63,9 +64,12 @@ block content
                   p.comments__message #{comment.text}
 
           .comments__footer.comments__footer--user
-            form(action='/articles/:articleId/comments' method='POST')
+            form(action=`/articles/${id}/comments` method='POST' enctype="multipart/form-data")
               .comments__avatar.avatar
                 img(src='/img/avatar-2.png' alt='аватар пользователя')
               label
                 textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
+                  if message
+                    |#{message}
+              +insertErrorMessage(validationMessages)
               button.comments__button.button.button--colored(type='submit') Опубликовать

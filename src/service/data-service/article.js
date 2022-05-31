@@ -22,18 +22,43 @@ class ArticleService {
     return !!deletedRows;
   }
 
-  findOne(id, needComments) {
-    const include = [Aliase.CATEGORIES];
+  async findOne(articleId, needComments) {
+    const options = {
+      include: [
+        Aliase.CATEGORIES,
+      ],
+      where: [{
+        id: articleId
+      }]
+    };
+
     if (needComments) {
-      include.push(Aliase.COMMENTS);
+      options.include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS
+      });
+
+      options.order = [
+        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
+      ];
     }
-    return this._Article.findByPk(id, {include});
+
+    return await this._Article.findOne(options);
   }
 
   async update(id, article) {
     const [affectedRows] = await this._Article.update(article, {
       where: {id}
     });
+
+    const updatedArticle = await this._Article.findOne({
+      where: {
+        id
+      }
+    });
+
+    await updatedArticle.setCategories(article.categories);
+
     return !!affectedRows;
   }
 

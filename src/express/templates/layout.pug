@@ -36,6 +36,14 @@ mixin pagination(page, totalPages, width, prefix)
           else
             a.pagination__button.button.button--forward.button--disabled(aria-label='Страница вперед')
 
+mixin insertErrorMessage(messages)
+  if messages
+    .form__validation-error
+      p.form__error-message При регистрации произошли ошибки:
+      ul.form__errors
+        each message of messages
+          li.form__error= message
+
 html(lang='ru')
   head
     meta(charset='utf-8')

@@ -34,7 +34,7 @@ const getFormatStringDate = (ms) => {
 const getNewArray = (array, numberLength) => {
   return shuffle(array).slice(0, getRandomInt(1, numberLength));
 };
-
+/*
 class KeyValidator {
   constructor(keys) {
     this._keys = keys;
@@ -64,8 +64,30 @@ class KeyValidator {
     return next();
   }
 }
+*/
+
+class KeyValidator {
+  constructor(schema) {
+    this._schema = schema;
+    this.validator = this.validator.bind(this);
+  }
+
+  validator(req, res, next) {
+    const validateObject = req.body;
+    const {error} = this._schema.validate(validateObject, {abortEarly: false});
+
+    if (error) {
+      return res.status(HttpCode.BAD_REQUEST)
+        .send(error.details.map((err) => err.message).join(`\n`));
+    }
+
+    return next();
+  }
+}
 
 const ensureArray = (value) => value ? Object.keys(value) : [];
+
+const prepareErrors = (errors) => errors.response.data.split(`\n`);
 
 module.exports = {
   getRandomInt,
@@ -74,4 +96,5 @@ module.exports = {
   shuffle,
   ensureArray,
   KeyValidator,
+  prepareErrors,
 };

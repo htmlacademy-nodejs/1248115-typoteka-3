@@ -8,7 +8,7 @@ block content
     section
       .popup.popup--new-publication.popup--anti
         .new-publication
-          form(action='/articles/add' method='POST' enctype='multipart/form-data')
+          form(action=`/articles/${action}` method='POST' enctype='multipart/form-data')
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
@@ -21,14 +21,19 @@ block content
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
               | окно
+            +insertErrorMessage(validationMessages)
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
+                //-input(type="hidden" name="old-image" value=article.picture)
+                input(type="hidden" name="old-image" value=`${article.picture ? article.picture : ''}`)
                 .form__field
                   label
-                    input(type='text' name='title' placeholder='Заголовок' required='' value=`${article.title ? article.title : ''}`)
+                    //-input(type='text' name='title' placeholder='Заголовок' required='' value=`${article.title ? article.title : ''}`)
+                    input(type='text' name='title' placeholder='Заголовок' value=`${article.title ? article.title : ''}`)
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text' name='photo' placeholder='Фотография' value=`${article.picture ? article.picture : ''}` readonly='')
+                    //-input#image-name-field(type='text' name='photo' placeholder='Фотография' value=`instagram-01.jpg` readonly='')
                   .form__image-loader.form__image-loader--publication
                     label
                       input.visually-hidden(type='file' name='upload')
@@ -40,9 +45,6 @@ block content
                       label(for=`checkbox-${count}`) #{item.name}
                       - count++
 
-                  //-.new-publication__checkbox.new-publication__checkbox--auto
-                        input#checkbox-auto(type='checkbox' name='category-1')
-                        label(for='checkbox-auto') Автомобили
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text

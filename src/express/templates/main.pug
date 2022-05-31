@@ -110,7 +110,7 @@ block content
                 img.preview__background-image(src=`/img/${item.picture}` alt=`${item.title}` width='460' height='240')
             time.preview__time(datetime='2019-03-21T20:33') #{item.createdAt}
             h3.preview__name
-                a.preview__name-link(href='#') #{item.title}
+                a.preview__name-link(href=`articles/${item.id}`) #{item.title}
             p.preview__text #{item.announce}
             a.preview__comment(href='#')
                 | Комментарии
