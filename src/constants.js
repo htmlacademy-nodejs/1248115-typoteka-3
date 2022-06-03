@@ -40,7 +40,7 @@ const Action = {
 const RequestObject = {
   BODY: `body`,
   PARAMS: `params`
-}
+};
 
 module.exports = {
   DEFAULT_COMMAND,

@@ -10,7 +10,7 @@ const mainRouter = new Router();
 
 const OFFERS_PER_PAGE = 8;
 
-  /*
+/*
   let user = {
     id: 1,
     firstName: 'Иван',
@@ -21,7 +21,7 @@ const OFFERS_PER_PAGE = 8;
     updatedAt: '2022-06-01T15:24:24.461Z'
   }
   */
-  /*
+/*
   let user = {
     id: 2,
     firstName: 'Петр',
@@ -32,7 +32,7 @@ const OFFERS_PER_PAGE = 8;
     updatedAt: '2022-06-01T15:24:24.461Z'
   }
   */
-  let user = null;
+let user = null;
 
 mainRouter.get(`/`, asyncHandler(async (req, res) => {
   let {page = 1} = req.query;
@@ -65,11 +65,11 @@ mainRouter.get(`/register`, (req, res) => {
 });
 
 mainRouter.get(`/login`, (req, res) => {
-  res.render(`login`, {user})
+  res.render(`login`, {user});
 });
 
 mainRouter.get(`/search-page`, (req, res) => {
-  res.render(`search`, {results: [], search: ``, user})
+  res.render(`search`, {results: [], search: ``, user});
 });
 
 mainRouter.get(`/search`, asyncHandler(async (req, res) => {
