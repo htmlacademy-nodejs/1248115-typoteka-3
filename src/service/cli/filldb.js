@@ -14,6 +14,7 @@ const {
 const {getLogger} = require(`../lib/logger`);
 const createSequelize = require(`../lib/sequelize`);
 const initDatabase = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
@@ -37,19 +38,21 @@ const readContent = async (filePath) => {
   }
 };
 
-const generateComments = (count, comments) => (
+const generateComments = (count, comments, users) => (
   Array.from({length: count}, (() => ({
     text: getNewArray(comments, 3).join(` `).slice(0, 99),
+    user: users[getRandomInt(0, users.length - 1)].email,
   })))
 );
 
-const generateArticles = (count, titles, categories, sentences, comments) => (
+const generateArticles = (count, titles, categories, sentences, comments, users) => (
   Array.from({length: count}, (() => ({
+    user: users[getRandomInt(0, users.length - 1)].email,
     title: titles[getRandomInt(0, titles.length - 1)].slice(0, 249),
     announce: getNewArray(sentences, 5).join(` `).slice(0, 249),
     fullText: getNewArray(sentences, sentences.length).join(` `).slice(0, 999),
     picture: IMAGES[getRandomInt(0, 3)],
-    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users),
     categories: getNewArray(categories, categories.length),
   })))
 );
@@ -73,6 +76,23 @@ module.exports = {
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const comments = await readContent(FILE_COMMENTS_PATH);
 
+    const users = [
+      {
+        firstName: `Иван`,
+        lastName: `Иванов`,
+        email: `ivanov@example.com`,
+        passwordHash: await passwordUtils.hash(`ivanov`),
+        avatar: `avatar-1.png`
+      },
+      {
+        firstName: `Пётр`,
+        lastName: `Петров`,
+        email: `petrov@example.com`,
+        passwordHash: await passwordUtils.hash(`petrov`),
+        avatar: `avatar-2.png`
+      }
+    ];
+
     const [count] = args;
     const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
@@ -81,8 +101,8 @@ module.exports = {
       process.exit(ExitCode.ERROR);
     }
 
-    const articles = generateArticles(countArticle, titles, categories, sentences, comments);
+    const articles = generateArticles(countArticle, titles, categories, sentences, comments, users);
 
-    return initDatabase(sequelize, {articles, categories});
+    return initDatabase(sequelize, {articles, categories, users});
   }
 };

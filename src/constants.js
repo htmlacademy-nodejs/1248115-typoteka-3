@@ -37,6 +37,11 @@ const Action = {
   EDIT: `edit`
 };
 
+const RequestObject = {
+  BODY: `body`,
+  PARAMS: `params`
+}
+
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
@@ -46,5 +51,6 @@ module.exports = {
   API_PREFIX,
   ENV,
   HttpMethod,
-  Action
+  Action,
+  RequestObject
 };

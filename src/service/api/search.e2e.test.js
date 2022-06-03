@@ -5,6 +5,7 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 
@@ -25,8 +26,26 @@ const mockCategories = [
   `Мебель`
 ];
 
+const mockUsers = [
+  {
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    email: `ivanov@example.com`,
+    passwordHash: passwordUtils.hashSync(`ivanov`),
+    avatar: `avatar01.jpg`
+  },
+  {
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    email: `petrov@example.com`,
+    passwordHash: passwordUtils.hashSync(`petrov`),
+    avatar: `avatar02.jpg`
+  }
+];
+
 const mockArticles = [
   {
+    user: `ivanov@example.com`,
     title: `Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`,
     picture: `sea.jpg`,
     announce: `Золотое сечение — соотношение двух величин, гармоническая пропорция. Он написал больше 30 хитов.`,
@@ -34,14 +53,17 @@ const mockArticles = [
     categories: [`Мебель`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Плюсую, но слишком много буквы! Планируете записать видосик на эту тему? Это где ж такие красоты?`
       },
       {
+        user: `ivanov@example.com`,
         text: `Мне кажется или я уже читал это где-то? Хочу такую же футболку :-) Плюсую, но слишком много !`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Ёлки. История деревьев. Ёлки. История деревьев`,
     picture: ``,
     announce: `Собрать камни бесконечности легко, если вы прирожденный герой. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
@@ -49,11 +71,13 @@ const mockArticles = [
     categories: [`Игрушки`, `Музыка`, `Программирование`, `За жизнь`, `Без рамки`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Хочу такую же футболку :-) Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Как выучить JS. Лучшие языки программирования`,
     picture: `sea123.jpg`,
     announce: `Собрать камни бесконечности легко, если вы прирожденный герой. Это один из лучших рок-музыкантов. Программировать не настолько сложно, как об этом говорят. Как начать действовать? Для начала просто соберитесь.`,
@@ -61,17 +85,21 @@ const mockArticles = [
     categories: [`Игрушки`, `Программирование`, `Музыка`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик?`
       },
       {
+        user: `ivanov@example.com`,
         text: `Согласен с автором! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. `
       },
       {
+        user: `petrov@example.com`,
         text: `Планируете записать видосик на эту тему?`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Лучшие языки программирования. Лучшие языки программирования`,
     picture: ``,
     announce: `Как начать действовать? Для начала просто соберитесь. Золотое сечение — соотношение двух величин, гармоническая пропорция. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
@@ -79,17 +107,21 @@ const mockArticles = [
     categories: [`Кино`, `Игрушки`, `Железо`, `Авто`, `Разное`, `Программирование`, `Без рамки`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете.`
       },
       {
+        user: `ivanov@example.com`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Хочу такую`
       },
       {
+        user: `petrov@example.com`,
         text: `Хочу такую же футболку :-)`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Учим HTML и CSS. Учим HTML и CSS.`,
     picture: `seaerwet.jpg`,
     announce: `Функция принимает на вход имя файла, из которого требуется прочитать информацию.`,
@@ -97,15 +129,19 @@ const mockArticles = [
     categories: [`Разное`, `Музыка`, `Игрушки`, `Железо`, `За жизнь`, `Программирование`, `Мебель`, `Деревья`, `Без рамки`, `Кино`, `Авто`],
     comments: [
       {
+        user: `ivanov@example.com`,
         text: `Планируете записать видосик на эту тему? Давно не пользуюсь стационарными`
       },
       {
+        user: `petrov@example.com`,
         text: `Мне кажется или я уже читал это где-то?`
       },
       {
+        user: `ivanov@example.com`,
         text: `Мне кажется или я уже читал это где-то? Давно не пользуюсь .`
       },
       {
+        user: `petrov@example.com`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.!`
       }
     ]
@@ -118,7 +154,7 @@ const app = express();
 app.use(express.json());
 
 beforeAll(async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
+  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
   search(app, new DataService(mockDB));
 });
 

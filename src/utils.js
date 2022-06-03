@@ -1,6 +1,6 @@
 'use strict';
 
-const {HttpCode} = require(`./constants`);
+const {HttpCode, RequestObject} = require(`./constants`);
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -67,13 +67,15 @@ class KeyValidator {
 */
 
 class KeyValidator {
-  constructor(schema) {
+  constructor(schema, reqObject) {
     this._schema = schema;
+    this._reqObject = reqObject;
     this.validator = this.validator.bind(this);
   }
 
   validator(req, res, next) {
-    const validateObject = req.body;
+
+    const validateObject = (this._reqObject === RequestObject.BODY ? req.body : req.params);
     const {error} = this._schema.validate(validateObject, {abortEarly: false});
 
     if (error) {

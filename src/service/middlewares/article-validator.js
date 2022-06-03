@@ -2,6 +2,7 @@
 
 const Joi = require(`joi`);
 const {KeyValidator} = require(`../../utils`);
+const {RequestObject} = require(`../../constants`);
 
 const ErrorMessage = {
   CATEGORIES: `Не выбрана ни одна категория объявления`,
@@ -14,6 +15,7 @@ const ErrorMessage = {
   FULLTEXT_MAX: `Полный текст не может содержать более 1000 символов`,
   PICTURE_TYPE: `Tип изображения не поддерживается`,
   PICTURE_MAX: `Название файла не должно превышать 50 символов`,
+  USER_ID: `Некорректный идентификатор пользователя`,
 };
 
 const schema = Joi.object({
@@ -36,6 +38,9 @@ const schema = Joi.object({
     'string.pattern.base': ErrorMessage.PICTURE_TYPE,
     'string.max': ErrorMessage.PICTURE_MAX,
   }),
+  userId: Joi.number().integer().positive().required().messages({
+    'number.base': ErrorMessage.USER_ID
+  })
 });
 
-module.exports = new KeyValidator(schema);
+module.exports = new KeyValidator(schema, RequestObject.BODY);

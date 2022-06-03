@@ -58,7 +58,12 @@ html(lang='ru')
 
   body
     .wrapper
-      include partials/header-guest.pug
+      - if (!user)
+        include partials/header-guest.pug
+      - if (user && user.id !== 1)
+        include partials/header-user.pug
+      - if (user && user.id === 1)
+        include partials/header-author.pug
       block content
       include partials/footer.pug
     script(src='/js/vendor.js')

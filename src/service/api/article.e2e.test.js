@@ -5,6 +5,7 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const article = require(`./article`);
 const DataService = require(`../data-service/article`);
 const CommentService = require(`../data-service/comment`);
@@ -26,8 +27,26 @@ const mockCategories = [
   `Мебель`
 ];
 
+const mockUsers = [
+  {
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    email: `ivanov@example.com`,
+    passwordHash: passwordUtils.hashSync(`ivanov`),
+    avatar: `avatar01.jpg`
+  },
+  {
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    email: `petrov@example.com`,
+    passwordHash: passwordUtils.hashSync(`petrov`),
+    avatar: `avatar02.jpg`
+  }
+];
+
 const mockArticles = [
   {
+    user: `ivanov@example.com`,
     title: `Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`,
     picture: `sea.jpg`,
     announce: `Золотое сечение — соотношение двух величин, гармоническая пропорция. Он написал больше 30 хитов.`,
@@ -35,14 +54,17 @@ const mockArticles = [
     categories: [`Мебель`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Плюсую, но слишком много буквы! Планируете записать видосик на эту тему? Это где ж такие красоты?`
       },
       {
+        user: `ivanov@example.com`,
         text: `Мне кажется или я уже читал это где-то? Хочу такую же футболку :-) Плюсую, но слишком много !`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Ёлки. История деревьев. Ёлки. История деревьев`,
     picture: ``,
     announce: `Собрать камни бесконечности легко, если вы прирожденный герой. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
@@ -50,11 +72,13 @@ const mockArticles = [
     categories: [`Игрушки`, `Музыка`, `Программирование`, `За жизнь`, `Без рамки`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Хочу такую же футболку :-) Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Как выучить JS. Лучшие языки программирования`,
     picture: `sea123.jpg`,
     announce: `Собрать камни бесконечности легко, если вы прирожденный герой. Это один из лучших рок-музыкантов. Программировать не настолько сложно, как об этом говорят. Как начать действовать? Для начала просто соберитесь.`,
@@ -62,17 +86,21 @@ const mockArticles = [
     categories: [`Игрушки`, `Программирование`, `Музыка`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик?`
       },
       {
+        user: `ivanov@example.com`,
         text: `Согласен с автором! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. `
       },
       {
+        user: `petrov@example.com`,
         text: `Планируете записать видосик на эту тему?`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Лучшие языки программирования. Лучшие языки программирования`,
     picture: ``,
     announce: `Как начать действовать? Для начала просто соберитесь. Золотое сечение — соотношение двух величин, гармоническая пропорция. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
@@ -80,17 +108,21 @@ const mockArticles = [
     categories: [`Кино`, `Игрушки`, `Железо`, `Авто`, `Разное`, `Программирование`, `Без рамки`],
     comments: [
       {
+        user: `petrov@example.com`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете.`
       },
       {
+        user: `ivanov@example.com`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Хочу такую`
       },
       {
+        user: `petrov@example.com`,
         text: `Хочу такую же футболку :-)`
       }
     ]
   },
   {
+    user: `ivanov@example.com`,
     title: `Учим HTML и CSS. Учим HTML и CSS.`,
     picture: `seaerwet.jpg`,
     announce: `Функция принимает на вход имя файла, из которого требуется прочитать информацию.`,
@@ -98,15 +130,19 @@ const mockArticles = [
     categories: [`Разное`, `Музыка`, `Игрушки`, `Железо`, `За жизнь`, `Программирование`, `Мебель`, `Деревья`, `Без рамки`, `Кино`, `Авто`],
     comments: [
       {
+        user: `ivanov@example.com`,
         text: `Планируете записать видосик на эту тему? Давно не пользуюсь стационарными`
       },
       {
+        user: `petrov@example.com`,
         text: `Мне кажется или я уже читал это где-то?`
       },
       {
+        user: `ivanov@example.com`,
         text: `Мне кажется или я уже читал это где-то? Давно не пользуюсь .`
       },
       {
+        user: `petrov@example.com`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.!`
       }
     ]
@@ -115,7 +151,7 @@ const mockArticles = [
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
+  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
   const app = express();
   app.use(express.json());
   article(app, new DataService(mockDB), new CommentService(mockDB));
@@ -163,7 +199,8 @@ describe(`API creates an article if data is valid`, () => {
     picture: ``,
     title: `Дам погладить котика, очень хороший котик, церного цвета `,
     fullText: `Дам погладить котика. Дорого. Не гербалайф. К лотку приучен.`,
-    announce: `Дам погладить котика. Бесплатно. Отдам вхорошие руки`
+    announce: `Дам погладить котика. Бесплатно. Отдам вхорошие руки`,
+    userId: 1
   };
 
   let app; let response;
@@ -190,7 +227,8 @@ describe(`API refuses to create an article if data is invalid`, () => {
     categories: [1, 2],
     title: `Дам погладить котика`,
     fullText: `Дам погладить котика. Дорого. Не гербалайф. К лотку приучен.`,
-    announce: `Дам погладить котика. Бесплатно.`
+    announce: `Дам погладить котика. Бесплатно.`,
+    userId: 1
   };
 
   let app;
@@ -248,7 +286,8 @@ describe(`API changes existent article`, () => {
     picture: `sea123.jpg`,
     title: `Дам погладить песика. Дам погладить песика. Дам погладить песика`,
     fullText: `Дам погладить котика. Дорого. Не гербалайф. К лотку приучен.`,
-    announce: `Дам погладить котика. Бесплатно. Дам погладить котика. Бесплатно.`
+    announce: `Дам погладить котика. Бесплатно. Дам погладить котика. Бесплатно.`,
+    userId: 1
   };
 
   let app; let response;
@@ -278,7 +317,8 @@ test(`API returns status code 404 when trying to change non-existent article`, a
     picture: `sea.jpg`,
     title: `Это вполне валидный объект. Это вполне валидный объект`,
     fullText: `однако поскольку такоой статьи в базе нет`,
-    announce: `мы получим 404, мы получим 404, мы получим 404, мы получим 404`
+    announce: `мы получим 404, мы получим 404, мы получим 404, мы получим 404`,
+    userId: 1
   };
 
   return request(app)
@@ -296,6 +336,7 @@ test(`API returns status code 400 when trying to change an article with invalid 
     title: `Это невалидный`,
     description: 123,
     picture: `объявления`,
+    userId: 1
   };
 
   return request(app)
@@ -356,6 +397,7 @@ describe(`API creates a comment if data is valid`, () => {
 
   const newComment = {
     text: `Валидному комментарию достаточно этих полей`,
+    userId: 1
   };
 
   let app; let response;
@@ -393,7 +435,7 @@ test(`API refuses to create a comment to non-existent article and returns status
 test(`API refuses to create a comment when data is invalid, and returns status code 400`, async () => {
 
   const invalidComment = {
-
+    text: `Не указан userId`
   };
 
   const app = await createAPI();

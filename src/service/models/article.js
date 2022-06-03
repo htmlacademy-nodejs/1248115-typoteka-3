@@ -11,16 +11,13 @@ const define = (sequelize) => Article.init({
     // eslint-disable-next-line new-cap
     type: DataTypes[`STRING`](1000),
   },
-  // eslint-disable-next-line new-cap
-  picture: DataTypes[`STRING`](50),
+  picture: DataTypes[`STRING`],
   title: {
-    // eslint-disable-next-line new-cap
-    type: DataTypes[`STRING`](250),
+    type: DataTypes[`STRING`],
     allowNull: false
   },
   announce: {
-    // eslint-disable-next-line new-cap
-    type: DataTypes[`STRING`](250),
+    type: DataTypes[`STRING`],
     allowNull: false
   },
 }, {
