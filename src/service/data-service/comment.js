@@ -5,6 +5,7 @@ const Aliase = require(`../models/aliase`);
 class CommentService {
   constructor(sequelize) {
     this._Comment = sequelize.models.Comment;
+    this._User = sequelize.models.User;
   }
 
   create(articleId, comment) {
@@ -30,7 +31,16 @@ class CommentService {
   }
 
   async findTotal() {
-    const include = [Aliase.ARTICLES];
+    const include = [
+      Aliase.ARTICLES,
+      {
+        model: this._User,
+        as: Aliase.USERS,
+        attributes: {
+          exclude: [`passwordHash`]
+        }
+      }
+    ];
 
     const comments = await this._Comment.findAll({
       include,

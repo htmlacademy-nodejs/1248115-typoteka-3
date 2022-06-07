@@ -10,20 +10,20 @@ block content
           if (index === comments.length - 1)
             li.publication__list-item.publication__list-item--last
               .publication__header
-                img.publication__list-image(src='/img/avatar-small-2.png' alt='Аватар пользователя' width='20' height='20')
-                b.publication__list-name Александр Петров
+                img.publication__list-image(src=`/img/${item.users.avatar}` alt='Аватар пользователя' width='20' height='20')
+                b.publication__list-name #{item.users.firstName} #{item.users.lastName}
                 time.publication__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
-              a.publication__item-text(href='#') #{item.text}
+              a.publication__item-text(href=`/articles/${item.articleId}`) #{item.text}
               p.publication__text-strong #{item.articles[`title`]}
               button.publication__button.button.button--close-item(type='button')
                 span.visually-hidden Закрыть строку списка
           else
             li.publication__list-item
               .publication__header
-                img.publication__list-image(src='/img/avatar-small-2.png' alt='Аватар пользователя' width='20' height='20')
-                b.publication__list-name Александр Петров
+                img.publication__list-image(src=`/img/${item.users.avatar}` alt='Аватар пользователя' width='20' height='20')
+                b.publication__list-name #{item.users.firstName} #{item.users.lastName}
                 time.publication__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
-              a.publication__item-text(href='#') #{item.text}
+              a.publication__item-text(href=`/articles/${item.articleId}`) #{item.text}
               p.publication__text-strong #{item.articles[`title`]}
               button.publication__button.button.button--close-item(type='button')
                 span.visually-hidden Закрыть строку списка

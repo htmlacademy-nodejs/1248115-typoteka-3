@@ -27,7 +27,7 @@ block content
             .form__field
               label
                 input(type='password' name='repeat-password' placeholder='Повтор пароля' required='')
-            +insertErrorMessage(validationMessages)
+            +insertErrorMessages(validationMessages)
             .form__image-loader
               a.form__avatar.avatar
                 input(type="hidden" name="old-image" value=`${userData.avatar ? userData.avatar : 'smile.png'}`)

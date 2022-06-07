@@ -10,31 +10,8 @@ const mainRouter = new Router();
 
 const OFFERS_PER_PAGE = 8;
 
-/*
-  let user = {
-    id: 1,
-    firstName: 'Иван',
-    lastName: `Иванов`,
-    email: 'ivanov@example.com',
-    avatar: 'avatar-1.png',
-    createdAt: '2022-06-01T15:24:24.461Z',
-    updatedAt: '2022-06-01T15:24:24.461Z'
-  }
-  */
-/*
-  let user = {
-    id: 2,
-    firstName: 'Петр',
-    lastName: `Петров`,
-    email: 'petrov@example.com',
-    avatar: 'avatar-2.png',
-    createdAt: '2022-06-01T15:24:24.461Z',
-    updatedAt: '2022-06-01T15:24:24.461Z'
-  }
-  */
-let user = null;
-
 mainRouter.get(`/`, asyncHandler(async (req, res) => {
+  const {user} = req.session;
   let {page = 1} = req.query;
   page = +page;
 
@@ -61,18 +38,23 @@ mainRouter.get(`/register`, (req, res) => {
     email: ``,
   };
 
-  res.render(`sign-up`, {userData, user});
+  res.render(`sign-up`, {userData});
 });
 
 mainRouter.get(`/login`, (req, res) => {
-  res.render(`login`, {user});
+  const userData = {
+    email: ``
+  };
+  res.render(`login`, {userData});
 });
 
 mainRouter.get(`/search-page`, (req, res) => {
+  const {user} = req.session;
   res.render(`search`, {results: [], search: ``, user});
 });
 
 mainRouter.get(`/search`, asyncHandler(async (req, res) => {
+  const {user} = req.session;
   try {
     const {search} = req.query;
     const results = await api.search(search);
@@ -106,16 +88,36 @@ mainRouter.post(`/register`, upload.single(`upload`), asyncHandler(async (req, r
     await api.createUser(userData);
     res.redirect(`/login`);
   } catch (errors) {
-
     const validationMessages = prepareErrors(errors);
     res.render(`sign-up`, {userData, validationMessages});
   }
 }));
 
-mainRouter.get(`/logout`, (req, res) => {
-  user = null;
+mainRouter.post(`/login`, asyncHandler(async (req, res) => {
+  const email = req.body[`email`];
+  const password = req.body[`password`];
 
-  res.redirect(`/`);
+  try {
+    const user = await api.auth(email, password);
+    req.session.user = user;
+    req.session.save(() => {
+      res.redirect(`/`);
+    });
+  } catch (errors) {
+    const userData = {
+      email: req.body[`email`]
+    };
+    const validationMessages = prepareErrors(errors);
+    res.render(`login`, {userData, validationMessages});
+  }
+}));
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+  req.session.save(() => {
+    res.redirect(`/`);
+  });
 });
+
 
 module.exports = mainRouter;

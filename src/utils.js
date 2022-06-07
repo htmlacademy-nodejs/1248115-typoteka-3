@@ -34,37 +34,6 @@ const getFormatStringDate = (ms) => {
 const getNewArray = (array, numberLength) => {
   return shuffle(array).slice(0, getRandomInt(1, numberLength));
 };
-/*
-class KeyValidator {
-  constructor(keys) {
-    this._keys = keys;
-    this.validator = this.validator.bind(this);
-  }
-
-  validator(req, res, next) {
-    const newObject = req.body;
-
-    const isValue = (field) => {
-      if (!field) {
-        return false;
-      }
-      if (field.length === 0) {
-        return false;
-      }
-      return true;
-    };
-
-    const valuesExists = this._keys.every((key) => isValue(newObject[key]));
-
-    if (!valuesExists) {
-      return res.status(HttpCode.BAD_REQUEST)
-        .send(`Bad request`);
-    }
-
-    return next();
-  }
-}
-*/
 
 class KeyValidator {
   constructor(schema, reqObject) {

@@ -9,6 +9,7 @@ block content
       .popup.popup--new-publication.popup--anti
         .new-publication
           form(action=`/articles/${action}` method='POST' enctype='multipart/form-data')
+            input(type="hidden" name="_csrf" value=csrfToken)
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
@@ -21,7 +22,7 @@ block content
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
               | окно
-            +insertErrorMessage(validationMessages)
+            +insertErrorMessages(validationMessages)
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
                 //-input(type="hidden" name="old-image" value=article.picture)
