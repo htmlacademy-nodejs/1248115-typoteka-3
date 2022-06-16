@@ -1,5 +1,21 @@
 extends layout.pug
 
+block variables
+  -
+    const getFormatStringDate = (dateString) => {
+      const date = new Date(dateString);
+      const piecesDate = [
+        `${date.getDate()}`.padStart(2, `0`),
+        `${date.getMonth() + 1}`.padStart(2, `0`),
+        `${date.getHours()}`.padStart(2, `0`),
+        `${date.getMinutes()}`.padStart(2, `0`),
+      ];
+
+      return `${piecesDate[0]}.${piecesDate[1]}.${date.getFullYear()}, ${piecesDate[2]}:${piecesDate[3]}`;
+    };
+
+    const errorMessage = `опубликовании комментария`
+
 block content
 
   main
@@ -9,8 +25,8 @@ block content
         h2.visually-hidden Основное содержание
         .post__wrapper
           .post__head
-            a.post__backwards.button.button--backwards(href='#') Назад
-            time.post__date(datetime='2019-03-21T20:33') #{article.createdAt}
+            a.post__backwards.button.button--backwards(href='javascript:history.go(-1)') Назад
+            time.post__date(datetime=`${article.createdAt}`) #{getFormatStringDate(article.createdAt)}
             h2.post__title.title.title--main #{article.title}
             ul.post__themes.themes
               each item of article.categories
@@ -19,33 +35,10 @@ block content
                     | #{item.name}
                     sup #{categories.find((category) => category.id === item.id)[`count`]}
                   button.themes__remove-btn(type='button') Удалить категорию
-            //-ul.post__themes.themes
-              li.themes__item
-                a.themes__item-link(href='#')
-                  | Автомобили
-                  sup 88
-                button.themes__remove-btn(type='button') Удалить категорию
-              li.themes__item
-                a.themes__item-link(href='#')
-                  | Удаленная работа
-                  sup 13
-                button.themes__remove-btn(type='button') Удалить категорию
-              li.themes__item
-                a.themes__item-link(href='#')
-                  | Бизнес
-                  sup 13
-                button.themes__remove-btn(type='button') Удалить категорию
           .post__picture
-            //-img(src='/img/sea-fullsize@1x.jpg' alt='пейзаж море, скалы, пляж')
             if article.picture
               img(src=`/img/${article.picture}` alt=`${article.categories[0].name}` width='940' height='490')
           .post__text
-            //-h3 Бирюзовое доверие
-            //-p
-              | У Apple иногда попадаются интерфейсы, за которые создателей хочется сильно
-              | поругать
-              | — к примеру интерфейс
-              | публикации приложения в AppStore, для которого я уже неделю восстановливаю свой аккаунт разработчика.
             p #{article.announce}
             p #{article.fullText}
 
@@ -63,7 +56,7 @@ block content
                   .comments__text
                     .comments__head
                       p #{comment.users.firstName} #{comment.users.lastName} •
-                      time.comments__date(datetime='2019-03-21T20:33') #{comment.createdAt}
+                      time.comments__date(datetime=`${comment.createdAt}`) #{getFormatStringDate(comment.createdAt)}
                     p.comments__message #{comment.text}
 
           if user
@@ -80,11 +73,9 @@ block content
                 button.comments__button.button.button--colored(type='submit') Опубликовать
           else
             .comments__footer.comments__footer--visitor
-                //-button.comments__button.button.button--colored(type='submit') Войти
                 a.comments__button.button.button--colored(href='/login') Войти
                 .comments__registration
                   p.text.text--signature
-                    //-b.title.title--small Регистрация
                     a.title.title--small(href='/register') Регистрация <br>
                     | Чтобы присоединиться к
                     |                   переписке

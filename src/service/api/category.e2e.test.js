@@ -148,23 +148,24 @@ const mockArticles = [
   }
 ];
 
-const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-
-const app = express();
-app.use(express.json());
-
-beforeAll(async () => {
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
+  const app = express();
+  app.use(express.json());
   category(app, new DataService(mockDB));
-});
+  return app;
+};
 
 describe(`API returns category list`, () => {
 
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .get(`/categories`);
+      .get(`/category`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -189,6 +190,167 @@ describe(`API returns category list`, () => {
         `Мебель`
       ])
   )
+  );
+
+});
+
+describe(`API creates a category if data is valid`, () => {
+
+  const newCategory = {
+    name: `Дизайн`
+  };
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .post(`/category`)
+      .send(newCategory);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+
+  test(`Categories count is changed`, () => request(app)
+    .get(`/category`)
+    .expect((res) => expect(res.body.length).toBe(13))
+  );
+
+});
+
+describe(`API creates a category if data is invalid`, () => {
+
+  const badCategory = {
+    name: `Ми`
+  };
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .post(`/category`)
+      .send(badCategory);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+
+  test(`Categories count is not changed`, () => request(app)
+    .get(`/category`)
+    .expect((res) => expect(res.body.length).toBe(12))
+  );
+
+});
+
+test(`When email is already in use status code is 400`, async () => {
+  const app = await createAPI();
+
+  const usedCategory = {
+    name: `Кино`
+  };
+
+  await request(app)
+    .post(`/category`)
+    .send(usedCategory)
+    .expect(HttpCode.BAD_REQUEST);
+});
+
+describe(`API changes existent category`, () => {
+  const newCategory = {
+    name: `Дизайн интерьеров`
+  };
+
+  let app; let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .put(`/category/2`)
+      .send(newCategory);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`category is really changed`, () => request(app)
+    .get(`/category/2`)
+    .expect((res) => expect(res.body.category.name).toBe(`Дизайн интерьеров`))
+  );
+
+});
+
+test(`API returns status code 404 when trying to change non-existent category`, async () => {
+
+  const app = await createAPI();
+
+  const newCategory = {
+    name: `Дизайн интерьеров`
+  };
+
+  return request(app)
+    .put(`/category/20`)
+    .send(newCategory)
+    .expect(HttpCode.NOT_FOUND);
+});
+
+test(`API returns status code 400 when trying to change an article with invalid data`, async () => {
+
+  const app = await createAPI();
+
+  const invalidCategory = {
+    name: `очень длинная категория, больше 50 символов рпглавырп грпгар ргрпаг  ргпрагпргрп прварп ррпаорпоарпорпл рр опрорп`
+  };
+
+  return request(app)
+    .put(`/category/2`)
+    .send(invalidCategory)
+    .expect(HttpCode.BAD_REQUEST);
+});
+
+describe(`API correctly deletes an empty category`, () => {
+
+  let app; let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .delete(`/category/5`);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Categories count is 11 now`, () => request(app)
+    .get(`/category`)
+    .expect((res) => expect(res.body.length).toBe(11))
+  );
+
+});
+
+test(`API refuses to delete non-existent category`, async () => {
+  const app = await createAPI();
+
+  return request(app)
+    .delete(`/category/100`)
+    .expect(HttpCode.NOT_FOUND);
+
+});
+
+describe(`API refuses delete a full category`, () => {
+
+  let app; let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .delete(`/category/1`);
+  });
+
+  test(`Status code 403`, () => expect(response.statusCode).toBe(HttpCode.FORBIDDEN));
+
+  test(`Categories count is 12 now`, () => request(app)
+    .get(`/category`)
+    .expect((res) => expect(res.body.length).toBe(12))
   );
 
 });

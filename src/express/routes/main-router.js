@@ -8,26 +8,34 @@ const {prepareErrors} = require(`../../utils`);
 
 const mainRouter = new Router();
 
-const OFFERS_PER_PAGE = 8;
+const ARTICLES_PER_PAGE = 8;
+const ARTICLES_PER_SECTION = 4;
 
 mainRouter.get(`/`, asyncHandler(async (req, res) => {
   const {user} = req.session;
   let {page = 1} = req.query;
   page = +page;
 
-  const limit = OFFERS_PER_PAGE;
-  const offset = (page - 1) * OFFERS_PER_PAGE;
+  const limitPage = ARTICLES_PER_PAGE;
+  const limitSection = ARTICLES_PER_SECTION;
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
   const [
-    {count, articles},
-    categories
+    {
+      current: {count, articles},
+      commented
+    },
+    categories,
+    comments
   ] = await Promise.all([
-    api.getArticles({limit, offset, comments: true}),
-    api.getCategories(true)
+    api.getArticles({limitPage, offset, comments: true, limitSection}),
+    api.getCategories(true),
+    api.getComments(limitSection)
   ]);
 
-  const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+  const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
-  res.render(`main`, {articles, page, totalPages, categories, user});
+  res.render(`main`, {articles, commented, page, totalPages, categories, comments, user});
 }));
 
 mainRouter.get(`/register`, (req, res) => {

@@ -39,10 +39,12 @@ mixin pagination(page, totalPages, width, prefix)
 mixin insertErrorMessages(messages)
   if messages
     .form__validation-error
-      p.form__error-message При регистрации произошли ошибки:
+      p.form__error-message При #{errorMessage} произошли ошибки:
       ul.form__errors
         each message of messages
           li.form__error= message
+
+block variables
 
 html(lang='ru')
   head

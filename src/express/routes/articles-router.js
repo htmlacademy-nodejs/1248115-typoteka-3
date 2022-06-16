@@ -12,14 +12,9 @@ const auth = require(`../middlewares/auth`);
 const authAuthor = require(`../middlewares/auth-author`);
 const csrf = require(`csurf`);
 
-const MAX_COMMENT_STRING = 100;
-
-const cutLongString = (string, maxlength) => {
-  return string.length > maxlength ? `${string.slice(0, maxlength - 1)}…` : string;
-};
-
 const UPLOAD_DIR = `../upload/img/`;
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
+const ARTICLES_PER_PAGE = 8;
 
 const articlesRouter = new Router();
 const csrfProtection = csrf();
@@ -84,10 +79,25 @@ articlesRouter.post(`/edit/:id`, authAuthor, upload.single(`upload`), csrfProtec
   }
 }));
 
-articlesRouter.get(`/category/:id`, (req, res) => {
+articlesRouter.get(`/category/:categoryId`, asyncHandler(async (req, res) => {
   const {user} = req.session;
-  res.render(`articles-by-category`, {user});
-});
+  const {categoryId} = req.params;
+
+  let {page = 1} = req.query;
+  page = +page;
+
+  const limitPage = ARTICLES_PER_PAGE;
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
+  const [categories, {category, count, articlesByCategory}] = await Promise.all([
+    api.getCategories(true),
+    api.getCategory({categoryId, limitPage, offset, comments: true})
+  ]);
+
+  const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+
+  res.render(`articles-by-category`, {category, articlesByCategory, page, totalPages, categories, user});
+}));
 
 articlesRouter.get(`/add`, authAuthor, csrfProtection, asyncHandler(async (req, res) => {
   const {user} = req.session;
@@ -131,7 +141,7 @@ articlesRouter.post(`/:id/comments`, auth, upload.single(`message`), csrfProtect
 
   const commentData = {
     userId: user.id,
-    text: cutLongString(message, MAX_COMMENT_STRING)
+    text: message
   };
 
   try {

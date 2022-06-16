@@ -14,14 +14,18 @@ module.exports = (app, articleService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, asyncHandler(async (req, res) => {
-    const {offset, limit, comments} = req.query;
-    let result;
-    if (limit || offset) {
-      result = await articleService.findPage({limit, offset, comments});
+    const {offset, limitPage, comments, limitSection} = req.query;
+    let articles = {};
+
+    if (limitPage || offset) {
+      articles.current = await articleService.findPage(limitPage, offset, comments);
     } else {
-      result = await articleService.findAll(comments);
+      articles.current = await articleService.findAll(comments);
     }
-    res.status(HttpCode.OK).json(result);
+
+    articles.commented = await articleService.findLimit(limitSection, comments);
+
+    res.status(HttpCode.OK).json(articles);
   }));
 
   route.get(`/:articleId`, [routeParamsValidator.validator, articleExist(articleService)], asyncHandler(async (req, res) => {
@@ -55,11 +59,12 @@ module.exports = (app, articleService, commentService) => {
     }
 
     return res.status(HttpCode.OK)
-        .send(`Updated`);
+      .send(`Updated`);
   }));
 
   route.delete(`/:articleId`, routeParamsValidator.validator, asyncHandler(async (req, res) => {
     const {articleId} = req.params;
+
     const article = await articleService.drop(articleId);
 
     if (!article) {
@@ -78,19 +83,6 @@ module.exports = (app, articleService, commentService) => {
     res.status(HttpCode.OK)
       .json(comments);
 
-  }));
-
-  route.delete(`/:articleId/comments/:commentId`, [routeParamsValidator.validator, articleExist(articleService)], asyncHandler(async (req, res) => {
-    const {commentId} = req.params;
-    const deleted = await commentService.drop(commentId);
-
-    if (!deleted) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found`);
-    }
-
-    return res.status(HttpCode.OK)
-      .json(deleted);
   }));
 
   route.post(`/:articleId/comments`, [routeParamsValidator.validator, articleExist(articleService), commentValidator.validator], asyncHandler(async (req, res) => {

@@ -1,9 +1,10 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {HttpCode} = require(`../../constants`);
+const {DuplicateParams} = require(`../../constants`);
+const {AsyncKeyValidator} = require(`../../utils`);
 
-const ErrorRegisterMessage = {
+const ErrorMessage = {
   FIRST_NAME: `Имя содержит некорректные символы`,
   LAST_NAME: `Фамилия содержит некорректные символы`,
   EMAIL: `Некорректный электронный адрес`,
@@ -15,40 +16,23 @@ const ErrorRegisterMessage = {
 
 const schema = Joi.object({
   firstName: Joi.string().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).messages({
-    'string.pattern.base': ErrorRegisterMessage.FIRST_NAME
+    'string.pattern.base': ErrorMessage.FIRST_NAME
   }).required(),
   lastName: Joi.string().required().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).messages({
-    'string.pattern.base': ErrorRegisterMessage.LAST_NAME
+    'string.pattern.base': ErrorMessage.LAST_NAME
   }),
   email: Joi.string().email().required().messages({
-    'string.email': ErrorRegisterMessage.EMAIL
+    'string.email': ErrorMessage.EMAIL
   }),
   password: Joi.string().min(6).required().messages({
-    'string.min': ErrorRegisterMessage.PASSWORD
+    'string.min': ErrorMessage.PASSWORD
   }),
   passwordRepeated: Joi.string().required().valid(Joi.ref(`password`)).messages({
-    'any.only': ErrorRegisterMessage.PASSWORD_REPEATED
+    'any.only': ErrorMessage.PASSWORD_REPEATED
   }),
   avatar: Joi.string().allow(``).pattern(/\S+(\.jpg|\.jpeg|\.png)$/).messages({
-    'string.pattern.base': ErrorRegisterMessage.AVATAR
+    'string.pattern.base': ErrorMessage.AVATAR
   }),
 });
 
-module.exports = (service) => async (req, res, next) => {
-  const newUser = req.body;
-  const {error} = schema.validate(newUser, {abortEarly: false});
-
-  if (error) {
-    return res.status(HttpCode.BAD_REQUEST)
-      .send(error.details.map((err) => err.message).join(`\n`));
-  }
-
-  const userByEmail = await service.findByEmail(req.body.email);
-
-  if (userByEmail) {
-    return res.status(HttpCode.BAD_REQUEST)
-      .send(ErrorRegisterMessage.EMAIL_EXIST);
-  }
-
-  return next();
-};
+module.exports = new AsyncKeyValidator(schema, DuplicateParams.EMAIL);

@@ -4,15 +4,20 @@ const {Router} = require(`express`);
 const asyncHandler = require(`express-async-handler`);
 const api = require(`../api`).getAPI();
 const authAuthor = require(`../middlewares/auth-author`);
+const {prepareErrors} = require(`../../utils`);
+const csrf = require(`csurf`);
+
 
 const myRouter = new Router();
+const csrfProtection = csrf();
 
 myRouter.use(authAuthor);
 
 myRouter.get(`/`, asyncHandler(async (req, res) => {
   const {user} = req.session;
-  const articles = await api.getArticles();
-  res.render(`my`, {articles, user});
+  const {current} = await api.getArticles();
+  console.log(current);
+  res.render(`my`, {current, user});
 }));
 
 myRouter.get(`/comments`, asyncHandler(async (req, res) => {
@@ -21,10 +26,79 @@ myRouter.get(`/comments`, asyncHandler(async (req, res) => {
   res.render(`comments`, {comments, user});
 }));
 
-myRouter.get(`/categories`, asyncHandler(async (req, res) => {
+myRouter.get(`/categories`, csrfProtection, asyncHandler(async (req, res) => {
   const {user} = req.session;
   const categories = await api.getCategories();
-  res.render(`all-categories`, {categories, user});
+  const categoryData = {
+    name: ``
+  };
+  res.render(`all-categories`, {categories, user, categoryData, csrfToken: req.csrfToken()});
+}));
+
+myRouter.get(`/articles/:id`, asyncHandler(async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await api.removeArticle(id);
+    res.redirect(`/my`);
+  } catch (errors) {
+    res.status(errors.response.status).send(errors.response.statusText);
+  }
+}));
+
+myRouter.get(`/comments/:commentId`, asyncHandler(async (req, res) => {
+  const {commentId} = req.params;
+
+  try {
+    await api.removeComment(commentId);
+    res.redirect(`/my/comments`);
+  } catch (errors) {
+    res.status(errors.response.status).send(errors.response.statusText);
+  }
+}));
+
+myRouter.post(`/category/add`, csrfProtection, asyncHandler(async (req, res) => {
+  const {user} = req.session;
+  const {body} = req;
+
+  const categoryData = {
+    name: body[`add-category`]
+  };
+
+  try {
+    await api.createCategory(categoryData);
+    res.redirect(`/my/categories`);
+  } catch (errors) {
+    const categories = await api.getCategories();
+    const validationMessages = prepareErrors(errors);
+    res.render(`all-categories`, {categories, validationMessages, user, categoryData, csrfToken: req.csrfToken()});
+  }
+}));
+
+myRouter.post(`/categories/:categoryId`, csrfProtection, asyncHandler(async (req, res) => {
+  const {user} = req.session;
+  const {categoryId} = req.params;
+  const {body} = req;
+
+  const categoryData = {
+    name: ``
+  };
+
+  try {
+    if (body.action === `edit`) {
+      const categoryEditData = {
+        name: body[`category-${categoryId}`]
+      };
+      await api.editCategory(categoryId, categoryEditData);
+    } else {
+      await api.removeCategory(categoryId);
+    }
+    res.redirect(`/my/categories`);
+  } catch (errors) {
+    const categories = await api.getCategories();
+    const validationMessages = prepareErrors(errors);
+    res.render(`all-categories`, {categories, validationMessages, user, categoryData, csrfToken: req.csrfToken()});
+  }
 }));
 
 module.exports = myRouter;

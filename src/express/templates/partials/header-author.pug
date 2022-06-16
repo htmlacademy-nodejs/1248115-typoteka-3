@@ -1,17 +1,22 @@
 header.header
-  a.header__logo.logo(href='#')
-    img.logo__image(src='/img/icons/logo-image-only.svg' alt='логотип Тайпотеки')
-    span.logo__name Типотека
-  button.button.button--colored.header__button-new Новая запись
+  if mainPage
+    a.header__logo.logo(style='pointer-events: none;')
+      img.logo__image(src='/img/icons/logo-image-only.svg' alt='логотип Тайпотеки')
+      span.logo__name Типотека
+  else
+    a.header__logo.logo(href='/')
+      img.logo__image(src='/img/icons/logo-image-only.svg' alt='логотип Тайпотеки')
+      span.logo__name Типотека
+  a.button.button--colored.header__button-new(href='/articles/add') Новая запись
   .header__dropdown
     a.button.button--burger.header__burger(href='#') Открыть меню
     ul.navigation.header__navigation
       li.navigation__item
-        a(href='#') Пункт меню
+        a(href='/my') Публикации
       li.navigation__item
-        a(href='#') Пункт меню
+        a(href='/my/categories') Категории
       li.navigation__item
-        a(href='#') Пункт меню
+        a(href='/my/comments') Комментарии
       li.navigation__item
-        a(href='#') Пункт меню
+        a(href='/logout') Выход
   a.header__search.button.button--search(href='/search-page' aria-label='поиск по сайту')

@@ -16,7 +16,7 @@ const ErrorAuthMessage = {
 module.exports = (app, service) => {
   app.use(`/user`, route);
 
-  route.post(`/`, userValidator(service), asyncHandler(async (req, res) => {
+  route.post(`/`, userValidator.validator(service), asyncHandler(async (req, res) => {
     const data = req.body;
 
     data.passwordHash = await passwordUtils.hash(data.password);
@@ -31,7 +31,8 @@ module.exports = (app, service) => {
 
   route.post(`/auth`, asyncHandler(async (req, res) => {
     const {email, password} = req.body;
-    const user = await service.findByEmail(email);
+
+    const user = await service.findCompareObject(email);
 
     if (!user) {
       res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.EMAIL);

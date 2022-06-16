@@ -172,3 +172,29 @@ describe(`API returns comment list`, () => {
   test(`Returns list of 13 comments`, () => expect(response.body.length).toBe(13));
 
 });
+
+
+describe(`API correctly deletes a comment`, () => {
+
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .delete(`/comments/1`);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Comments count is 12 now`, () => request(app)
+    .get(`/comments`)
+    .expect((res) => expect(res.body.length).toBe(12))
+  );
+
+});
+
+test(`API refuses to delete non-existent comment`, async () => {
+  return request(app)
+    .delete(`/comments/100`)
+    .expect(HttpCode.NOT_FOUND);
+
+});

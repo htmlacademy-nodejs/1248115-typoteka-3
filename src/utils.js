@@ -18,19 +18,6 @@ const shuffle = (someArray) => {
   return newSomeArray;
 };
 
-const getFormatStringDate = (ms) => {
-  const date = new Date(ms);
-  const piecesDate = [
-    `${date.getMonth() + 1}`.padStart(2, `0`),
-    `${date.getDate()}`.padStart(2, `0`),
-    `${date.getHours()}`.padStart(2, `0`),
-    `${date.getMinutes()}`.padStart(2, `0`),
-    `${date.getSeconds()}`.padStart(2, `0`),
-  ];
-
-  return `${date.getFullYear()}-${piecesDate[0]}-${piecesDate[1]} ${piecesDate[2]}:${piecesDate[3]}:${piecesDate[4]}`;
-};
-
 const getNewArray = (array, numberLength) => {
   return shuffle(array).slice(0, getRandomInt(1, numberLength));
 };
@@ -56,16 +43,50 @@ class KeyValidator {
   }
 }
 
+class AsyncKeyValidator {
+  constructor(schema, duplicate) {
+    this._schema = schema;
+    this._duplicate = duplicate;
+    this.validator = this.validator.bind(this);
+  }
+
+  validator(service) {
+    return (
+      async (req, res, next) => {
+
+        const validateObject = req.body;
+        const {error} = this._schema.validate(validateObject, {abortEarly: false});
+
+        const stringMessage = `Значение ${this._duplicate[1]} уже используется`;
+
+        if (error) {
+          return res.status(HttpCode.BAD_REQUEST)
+              .send(error.details.map((err) => err.message).join(`\n`));
+        }
+
+        const duplicateObject = await service.findCompareObject(req.body[this._duplicate[0]]);
+
+        if (duplicateObject) {
+          return res.status(HttpCode.BAD_REQUEST)
+              .send(stringMessage);
+        }
+
+        return next();
+      }
+    );
+  }
+}
+
 const ensureArray = (value) => value ? Object.keys(value) : [];
 
 const prepareErrors = (errors) => errors.response.data.split(`\n`);
 
 module.exports = {
   getRandomInt,
-  getFormatStringDate,
   getNewArray,
   shuffle,
   ensureArray,
   KeyValidator,
+  AsyncKeyValidator,
   prepareErrors,
 };

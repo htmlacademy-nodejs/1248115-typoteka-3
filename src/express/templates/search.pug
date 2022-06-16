@@ -1,5 +1,19 @@
 extends layout.pug
 
+block variables
+  -
+    const getFormatStringDate = (dateString) => {
+      const date = new Date(dateString);
+      const piecesDate = [
+        `${date.getDate()}`.padStart(2, `0`),
+        `${date.getMonth() + 1}`.padStart(2, `0`),
+        `${date.getHours()}`.padStart(2, `0`),
+        `${date.getMinutes()}`.padStart(2, `0`),
+      ];
+
+      return `${piecesDate[0]}.${piecesDate[1]}.${date.getFullYear()}, ${piecesDate[2]}:${piecesDate[3]}`;
+    };
+
 block content
 
   main
@@ -17,8 +31,8 @@ block content
 
               each result in results
                 .search__result
-                  time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
-                  a.search__link(href='#') #{result.title}
+                  time.search__date(datetime=`${result.createdAt}`) #{getFormatStringDate(result.createdAt)}
+                  a.search__link(href=`/articles/${result.id}`) #{result.title}
         else
           .search-page__wrapper.search-page__wrapper--empty
             h1 Поиск
@@ -38,13 +52,3 @@ block content
               label
                 input(type='search' name='search' placeholder='Что ищем?' value= '')
               button.search__button.button.button--transparent(type='submit') Найти
-
-//-
-          .search__result
-            time.search__date(datetime='2019-03-21T20:33') 21.03.2019, 20:33
-            a.search__link
-              | Huawei открыла в России
-              b путешествия
-              |  на смартфон Mate 30 Pro без сервисов
-              |                 Google
-

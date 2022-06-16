@@ -15,6 +15,14 @@ class CommentService {
     });
   }
 
+  async findOne(id) {
+    return await this._Comment.findOne({
+      where: {
+        id
+      }
+    });
+  }
+
   async drop(id) {
     const deletedRows = await this._Comment.destroy({
       where: {id}
@@ -30,7 +38,7 @@ class CommentService {
     });
   }
 
-  async findTotal() {
+  async findTotal(limit) {
     const include = [
       Aliase.ARTICLES,
       {
@@ -42,14 +50,20 @@ class CommentService {
       }
     ];
 
-    const comments = await this._Comment.findAll({
+    let comments = await this._Comment.findAll({
       include,
       order: [
         [`createdAt`, `DESC`]
       ]
     });
 
-    return comments.map((item) => item.get());
+    comments = comments.map((item) => item.get());
+
+    if (limit) {
+      comments = comments.slice(0, limit);
+    }
+
+    return comments;
   }
 }
 

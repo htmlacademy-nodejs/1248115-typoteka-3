@@ -15,7 +15,7 @@ block content
                 time.publication__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
               a.publication__item-text(href=`/articles/${item.articleId}`) #{item.text}
               p.publication__text-strong #{item.articles[`title`]}
-              button.publication__button.button.button--close-item(type='button')
+              a.publication__button.button.button--close-item(href=`/my/comments/${item.id}`)
                 span.visually-hidden Закрыть строку списка
           else
             li.publication__list-item
@@ -25,5 +25,5 @@ block content
                 time.publication__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
               a.publication__item-text(href=`/articles/${item.articleId}`) #{item.text}
               p.publication__text-strong #{item.articles[`title`]}
-              button.publication__button.button.button--close-item(type='button')
+              a.publication__button.button.button--close-item(href=`/my/comments/${item.id}`)
                 span.visually-hidden Закрыть строку списка

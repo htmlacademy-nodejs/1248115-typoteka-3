@@ -170,9 +170,9 @@ describe(`API returns a list of all articles`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
+  test(`Returns a list of 5 articles`, () => expect(response.body.current.length).toBe(5));
 
-  test(`Last article's title equals "Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин"`, () => expect(response.body[4].title).toBe(`Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`));
+  test(`Last article's title equals "Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин"`, () => expect(response.body.current[4].title).toBe(`Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`));
 
 });
 
@@ -216,7 +216,7 @@ describe(`API creates an article if data is valid`, () => {
 
   test(`Articles count is changed`, () => request(app)
     .get(`/articles`)
-    .expect((res) => expect(res.body.length).toBe(6))
+    .expect((res) => expect(res.body.current.length).toBe(6))
   );
 
 });
@@ -359,7 +359,7 @@ describe(`API correctly deletes an article`, () => {
 
   test(`article count is 4 now`, () => request(app)
     .get(`/articles`)
-    .expect((res) => expect(res.body.length).toBe(4))
+    .expect((res) => expect(res.body.current.length).toBe(4))
   );
 
 });
@@ -444,44 +444,5 @@ test(`API refuses to create a comment when data is invalid, and returns status c
     .post(`/articles/2/comments`)
     .send(invalidComment)
     .expect(HttpCode.BAD_REQUEST);
-
-});
-
-describe(`API correctly deletes a comment`, () => {
-
-  let app; let response;
-
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app)
-      .delete(`/articles/1/comments/1`);
-  });
-
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-
-  test(`Comments count is 1 now`, () => request(app)
-    .get(`/articles/1/comments`)
-    .expect((res) => expect(res.body.length).toBe(1))
-  );
-
-});
-
-test(`API refuses to delete non-existent comment`, async () => {
-
-  const app = await createAPI();
-
-  return request(app)
-    .delete(`/articles/4/comments/100`)
-    .expect(HttpCode.NOT_FOUND);
-
-});
-
-test(`API refuses to delete a comment to non-existent article`, async () => {
-
-  const app = await createAPI();
-
-  return request(app)
-    .delete(`/articles/20/comments/1`)
-    .expect(HttpCode.NOT_FOUND);
 
 });

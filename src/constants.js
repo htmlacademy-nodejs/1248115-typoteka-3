@@ -42,6 +42,11 @@ const RequestObject = {
   PARAMS: `params`
 };
 
+const DuplicateParams = {
+  EMAIL: [`email`, `электронного адреса`],
+  NAME: [`name`, `категории`]
+};
+
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
@@ -52,5 +57,6 @@ module.exports = {
   ENV,
   HttpMethod,
   Action,
-  RequestObject
+  RequestObject,
+  DuplicateParams
 };

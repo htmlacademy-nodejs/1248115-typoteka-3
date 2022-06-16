@@ -22,8 +22,8 @@ class API {
     return response.data;
   }
 
-  getArticles({offset, limit, comments} = {}) {
-    return this._load(`/articles`, {params: {offset, limit, comments}});
+  getArticles({offset, limitPage, comments, limitSection} = {}) {
+    return this._load(`/articles`, {params: {offset, limitPage, comments, limitSection}});
   }
 
   getArticle(id, comments) {
@@ -35,7 +35,11 @@ class API {
   }
 
   getCategories(count) {
-    return this._load(`/categories`, {params: {count}});
+    return this._load(`/category`, {params: {count}});
+  }
+
+  getCategory({categoryId, limitPage, offset, comments} = {}) {
+    return this._load(`/category/${categoryId}`, {params: {limitPage, offset, comments}});
   }
 
   createArticle(data) {
@@ -45,8 +49,8 @@ class API {
     });
   }
 
-  getComments() {
-    return this._load(`/comments`);
+  getComments(limit) {
+    return this._load(`/comments`, {params: {limit}});
   }
 
   editArticle(id, data) {
@@ -74,6 +78,39 @@ class API {
     return this._load(`/user/auth`, {
       method: HttpMethod.POST,
       data: {email, password}
+    });
+  }
+
+  removeArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: HttpMethod.DELETE,
+    });
+  }
+
+  removeComment(commentId) {
+    return this._load(`/comments/${commentId}`, {
+      method: HttpMethod.DELETE,
+
+    });
+  }
+
+  createCategory(data) {
+    return this._load(`/category`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  editCategory(id, data) {
+    return this._load(`/category/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
+  removeCategory(id) {
+    return this._load(`/category/${id}`, {
+      method: HttpMethod.DELETE,
     });
   }
 }

@@ -10,10 +10,11 @@ class UserService {
     return user.get();
   }
 
-  async findByEmail(email) {
+  async findCompareObject(email) {
     const user = await this._User.findOne({
       where: {email}
     });
+
     return user && user.get();
   }
 }

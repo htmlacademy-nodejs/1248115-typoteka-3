@@ -1,21 +1,35 @@
 extends layout.pug
 
+block variables
+  -
+    const getFormatStringDate = (dateString) => {
+      const date = new Date(dateString);
+      const piecesDate = [
+        `${date.getDate()}`.padStart(2, `0`),
+        `${date.getMonth() + 1}`.padStart(2, `0`),
+        `${date.getHours()}`.padStart(2, `0`),
+        `${date.getMinutes()}`.padStart(2, `0`),
+      ];
+
+      return `${piecesDate[0]}.${piecesDate[1]}.${date.getFullYear()}, ${piecesDate[2]}:${piecesDate[3]}`;
+    };
+
 block content
 
   main.main-page.main-page--padding
     section.main-page__notes.notes
       h1.notes__title Мои записи
       ul.notes__list
-        each item, index in articles
-          if (index === articles.length - 1)
+        each item, index in current
+          if (index === current.length - 1)
             li.notes__list-item.notes__list-item--last
-              time.notes__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
-              a.notes__item-text(href='#') #{item.title}
-              button.notes__button.button.button--close-item(type='button')
+              time.notes__item-time(datetime=`${item.createdAt}`) #{getFormatStringDate(item.createdAt)}
+              a.notes__item-text(href=`/articles/${item.id}`) #{item.title}
+              a.notes__button.button.button--close-item(href=`/my/articles/${item.id}`)
                 span.visually-hidden Закрыть строку списка
           else
             li.notes__list-item
-              time.notes__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
-              a.notes__item-text(href='#') #{item.title}
-              button.notes__button.button.button--close-item(type='button')
+              time.notes__item-time(datetime=`${item.createdAt}`) #{getFormatStringDate(item.createdAt)}
+              a.notes__item-text(href=`/articles/${item.id}`) #{item.title}
+              a.notes__button.button.button--close-item(href=`/my/articles/${item.id}`)
                 span.visually-hidden Закрыть строку списка
