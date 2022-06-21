@@ -25,6 +25,11 @@ const API_PREFIX = `/api`;
 
 const ENV = `production`;
 
+const DefaultPort = {
+  SERVICE: 3000,
+  EXPRESS: 8080,
+};
+
 const HttpMethod = {
   GET: `GET`,
   POST: `POST`,
@@ -47,6 +52,8 @@ const DuplicateParams = {
   NAME: [`name`, `категории`]
 };
 
+const ALLOWED_DOMAIN = `http://localhost:8080`;
+
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
@@ -58,5 +65,7 @@ module.exports = {
   HttpMethod,
   Action,
   RequestObject,
-  DuplicateParams
+  DuplicateParams,
+  DefaultPort,
+  ALLOWED_DOMAIN
 };

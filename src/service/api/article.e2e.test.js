@@ -1,6 +1,8 @@
 'use strict';
 
 const express = require(`express`);
+const http = require(`http`);
+const socket = require(`../lib/socket`);
 const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
@@ -153,6 +155,9 @@ const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
   const app = express();
+  const server = http.createServer(app);
+  const io = socket(server);
+  app.locals.socketio = io;
   app.use(express.json());
   article(app, new DataService(mockDB), new CommentService(mockDB));
   return app;

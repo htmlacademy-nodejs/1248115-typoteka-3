@@ -8,7 +8,7 @@ const {
   getRandomInt,
   getFormatStringDate,
   getNewArray,
-} = require(`../../utils`);
+} = require(`../../utils/utils`);
 
 const {
   ExitCode,

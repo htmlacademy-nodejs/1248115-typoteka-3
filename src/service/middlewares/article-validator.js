@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {KeyValidator} = require(`../../utils`);
+const {KeyValidator} = require(`../../utils/utils`);
 const {RequestObject} = require(`../../constants`);
 
 const ErrorMessage = {

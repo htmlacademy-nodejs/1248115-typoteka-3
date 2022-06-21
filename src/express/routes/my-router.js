@@ -4,9 +4,8 @@ const {Router} = require(`express`);
 const asyncHandler = require(`express-async-handler`);
 const api = require(`../api`).getAPI();
 const authAuthor = require(`../middlewares/auth-author`);
-const {prepareErrors} = require(`../../utils`);
+const {prepareErrors} = require(`../../utils/utils`);
 const csrf = require(`csurf`);
-
 
 const myRouter = new Router();
 const csrfProtection = csrf();
@@ -16,7 +15,6 @@ myRouter.use(authAuthor);
 myRouter.get(`/`, asyncHandler(async (req, res) => {
   const {user} = req.session;
   const {current} = await api.getArticles();
-  console.log(current);
   res.render(`my`, {current, user});
 }));
 
@@ -60,7 +58,6 @@ myRouter.get(`/comments/:commentId`, asyncHandler(async (req, res) => {
 myRouter.post(`/category/add`, csrfProtection, asyncHandler(async (req, res) => {
   const {user} = req.session;
   const {body} = req;
-
   const categoryData = {
     name: body[`add-category`]
   };

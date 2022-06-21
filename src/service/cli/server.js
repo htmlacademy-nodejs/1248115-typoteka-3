@@ -1,14 +1,17 @@
 'use strict';
 
 const express = require(`express`);
-const {HttpCode, ExitCode, API_PREFIX} = require(`../../constants`);
+const http = require(`http`);
+const socket = require(`../lib/socket`);
+const {HttpCode, ExitCode, API_PREFIX, DefaultPort} = require(`../../constants`);
 const {getLogger} = require(`../lib/logger`);
 const createSequelize = require(`../lib/sequelize`);
 const createRoutes = require(`../api`);
 
-const DEFAULT_PORT = 3000;
-
 const app = express();
+const server = http.createServer(app);
+const io = socket(server);
+app.locals.socketio = io;
 const logger = getLogger({name: `api`});
 
 module.exports = {
@@ -47,10 +50,10 @@ module.exports = {
     logger.info(`Connection to database established`);
 
     const [customPort] = args;
-    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
+    const port = Number.parseInt(customPort, 10) || DefaultPort.SERVICE;
 
     try {
-      const server = app.listen(port);
+      server.listen(port);
       server.on(`listening`, () => {
         logger.info(`Listening to connections on ${port}`);
       });

@@ -2,7 +2,7 @@
 
 const Joi = require(`joi`);
 const {DuplicateParams} = require(`../../constants`);
-const {AsyncKeyValidator} = require(`../../utils`);
+const {AsyncKeyValidator} = require(`../../utils/utils`);
 
 const ErrorMessage = {
   NAME_MIN: `Заголовок содержит меньше 5 символов`,

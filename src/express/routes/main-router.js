@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const asyncHandler = require(`express-async-handler`);
 const api = require(`../api`).getAPI();
 const upload = require(`../middlewares/upload`);
-const {prepareErrors} = require(`../../utils`);
+const {prepareErrors} = require(`../../utils/utils`);
 
 const mainRouter = new Router();
 

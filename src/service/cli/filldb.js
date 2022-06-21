@@ -5,7 +5,7 @@ const fs = require(`fs`).promises;
 const {
   getRandomInt,
   getNewArray,
-} = require(`../../utils`);
+} = require(`../../utils/utils`);
 
 const {
   ExitCode,

@@ -68,5 +68,8 @@ html(lang='ru')
         include partials/header-author.pug
       block content
       include partials/footer.pug
+      include partials/sections-template.pug
     script(src='/js/vendor.js')
     script(src='/js/main.js')
+    script(src='https://cdn.socket.io/4.5.1/socket.io.js')
+    script(src='/js/socket.js')
