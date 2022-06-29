@@ -1,7 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode, ALLOWED_DOMAIN} = require(`../../constants`);
+const {HttpCode} = require(`../../constants`);
 const articleValidator = require(`../middlewares/article-validator`);
 const articleExist = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
@@ -14,24 +14,16 @@ module.exports = (app, articleService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, asyncHandler(async (req, res) => {
-
-    if (req.headers[`origin`] === ALLOWED_DOMAIN) {
-      res.set({
-        'Content-Type': `application/json`,
-        'Access-Control-Allow-Origin': `*`,
-      });
-    }
-
     const {offset, limitPage, comments, limitSection} = req.query;
     let articles = {};
 
     if (limitPage || offset) {
-      articles.current = await articleService.findPage(limitPage, offset, comments);
+      articles.currentArticles = await articleService.findPage(limitPage, offset, comments);
     } else {
-      articles.current = await articleService.findAll(comments);
+      articles.currentArticles = await articleService.findAll(comments);
     }
 
-    articles.commented = await articleService.findLimit(limitSection, comments);
+    articles.commentedArticles = await articleService.findLimit(limitSection, comments);
 
     res.status(HttpCode.OK).json(articles);
   }));
@@ -96,9 +88,6 @@ module.exports = (app, articleService, commentService) => {
   route.post(`/:articleId/comments`, [routeParamsValidator.validator, articleExist(articleService), commentValidator.validator], asyncHandler(async (req, res) => {
     const {articleId} = req.params;
     const comment = await commentService.create(articleId, req.body);
-
-    const io = req.app.locals.socketio;
-    io.emit(`comment:update`);
 
     return res.status(HttpCode.CREATED)
       .json(comment);

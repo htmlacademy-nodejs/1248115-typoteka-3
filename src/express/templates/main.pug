@@ -40,9 +40,9 @@ block content
           h2.hot__name
             | Самое обсуждаемое
             span.hot__icon.hot__icon--fire
-          if commented.length
+          if commentedArticles.length
             ul.hot__list
-              each item of commented
+              each item of commentedArticles
                 li.hot__list-item
                   a.hot__list-link(href=`/articles/${item.id}`) #{cutLongString(item.announce, MAX_LONG_STRING)}
                     sup.hot__link-sup #{item.commentsCount}

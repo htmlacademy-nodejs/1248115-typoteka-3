@@ -5,6 +5,7 @@ const asyncHandler = require(`express-async-handler`);
 const api = require(`../api`).getAPI();
 const upload = require(`../middlewares/upload`);
 const {prepareErrors} = require(`../../utils/utils`);
+const {HttpCode} = require(`../../constants`);
 
 const mainRouter = new Router();
 
@@ -22,8 +23,8 @@ mainRouter.get(`/`, asyncHandler(async (req, res) => {
 
   const [
     {
-      current: {count, articles},
-      commented
+      currentArticles: {count, articles},
+      commentedArticles
     },
     categories,
     comments
@@ -35,7 +36,7 @@ mainRouter.get(`/`, asyncHandler(async (req, res) => {
 
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
-  res.render(`main`, {articles, commented, page, totalPages, categories, comments, user});
+  res.render(`main`, {articles, commentedArticles, page, totalPages, categories, comments, user});
 }));
 
 mainRouter.get(`/register`, (req, res) => {
@@ -127,5 +128,20 @@ mainRouter.get(`/logout`, (req, res) => {
   });
 });
 
+mainRouter.get(`/sections`, asyncHandler(async (req, res) => {
+  const {limit} = req.query;
+  const limitSection = limit;
+
+  try {
+    const updateMainPage = await Promise.all([
+      api.getArticles({comments: true, limitSection}),
+      api.getComments(limit)
+    ]);
+
+    res.status(HttpCode.OK).send(updateMainPage);
+  } catch (errors) {
+    res.status(errors.response.status).send(errors.response.statusText);
+  }
+}));
 
 module.exports = mainRouter;

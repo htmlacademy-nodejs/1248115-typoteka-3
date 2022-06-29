@@ -18,6 +18,19 @@ const passwordUtils = require(`../lib/password`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
+const MAX_COUNT_ARTICALS = 1000;
+
+const CountGeneration = {
+  IMAGE: 3,
+  SENTENCE: 5,
+  COMMENT: 3
+};
+
+const MaxLengthString = {
+  COLUMN: 249,
+  FULLTEXT: 999,
+  COMMENT: 99
+};
 
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
@@ -40,7 +53,7 @@ const readContent = async (filePath) => {
 
 const generateComments = (count, comments, users) => (
   Array.from({length: count}, (() => ({
-    text: getNewArray(comments, 3).join(` `).slice(0, 99),
+    text: getNewArray(comments, CountGeneration.COMMENT).join(` `).slice(0, MaxLengthString.COMMENT),
     user: users[getRandomInt(0, users.length - 1)].email,
   })))
 );
@@ -48,10 +61,10 @@ const generateComments = (count, comments, users) => (
 const generateArticles = (count, titles, categories, sentences, comments, users) => (
   Array.from({length: count}, (() => ({
     user: users[getRandomInt(0, users.length - 1)].email,
-    title: titles[getRandomInt(0, titles.length - 1)].slice(0, 249),
-    announce: getNewArray(sentences, 5).join(` `).slice(0, 249),
-    fullText: getNewArray(sentences, sentences.length).join(` `).slice(0, 999),
-    picture: IMAGES[getRandomInt(0, 3)],
+    title: titles[getRandomInt(0, titles.length - 1)].slice(0, MaxLengthString.COLUMN),
+    announce: getNewArray(sentences, CountGeneration.SENTENCE).join(` `).slice(0, MaxLengthString.COLUMN),
+    fullText: getNewArray(sentences, sentences.length).join(` `).slice(0, MaxLengthString.FULLTEXT),
+    picture: IMAGES[getRandomInt(0, CountGeneration.IMAGE)],
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users),
     categories: getNewArray(categories, categories.length),
   })))
@@ -96,7 +109,7 @@ module.exports = {
     const [count] = args;
     const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    if (countArticle > 1000) {
+    if (countArticle > MAX_COUNT_ARTICALS) {
       console.log(`Не больше 1000 публикаций`);
       process.exit(ExitCode.ERROR);
     }

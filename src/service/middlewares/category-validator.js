@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {DuplicateParams} = require(`../../constants`);
+const {DuplicateParam} = require(`../../constants`);
 const {AsyncKeyValidator} = require(`../../utils/utils`);
 
 const ErrorMessage = {
@@ -16,4 +16,4 @@ const schema = Joi.object({
   }),
 });
 
-module.exports = new AsyncKeyValidator(schema, DuplicateParams.NAME);
+module.exports = new AsyncKeyValidator(schema, DuplicateParam.NAME);
