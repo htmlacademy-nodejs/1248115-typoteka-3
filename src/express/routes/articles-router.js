@@ -146,6 +146,10 @@ articlesRouter.post(`/:id/comments`, auth, upload.single(`message`), csrfProtect
 
   try {
     await api.createComment(id, commentData);
+
+    const io = req.app.locals.socketio;
+    io.emit(`comment:update`);
+
     res.redirect(`/articles/${id}`);
   } catch (errors) {
     const validationMessages = prepareErrors(errors);

@@ -1,5 +1,19 @@
 extends layout.pug
 
+block variables
+  -
+    const getFormatStringDate = (dateString) => {
+      const date = new Date(dateString);
+      const piecesDate = [
+        `${date.getDate()}`.padStart(2, `0`),
+        `${date.getMonth() + 1}`.padStart(2, `0`),
+        `${date.getHours()}`.padStart(2, `0`),
+        `${date.getMinutes()}`.padStart(2, `0`),
+      ];
+
+      return `${piecesDate[0]}.${piecesDate[1]}.${date.getFullYear()}, ${piecesDate[2]}:${piecesDate[3]}`;
+    };
+
 block content
 
   main.main-page.main-page--padding
@@ -12,7 +26,7 @@ block content
               .publication__header
                 img.publication__list-image(src=`/img/${item.users.avatar}` alt='Аватар пользователя' width='20' height='20')
                 b.publication__list-name #{item.users.firstName} #{item.users.lastName}
-                time.publication__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
+                time.publication__item-time(datetime=`${item.createdAt}`) #{getFormatStringDate(item.createdAt)}
               a.publication__item-text(href=`/articles/${item.articleId}`) #{item.text}
               p.publication__text-strong #{item.articles[`title`]}
               a.publication__button.button.button--close-item(href=`/my/comments/${item.id}`)
@@ -22,7 +36,7 @@ block content
               .publication__header
                 img.publication__list-image(src=`/img/${item.users.avatar}` alt='Аватар пользователя' width='20' height='20')
                 b.publication__list-name #{item.users.firstName} #{item.users.lastName}
-                time.publication__item-time(datetime='2019-03-21T20:33') #{item.createdAt}
+                time.publication__item-time(datetime=`${item.createdAt}`) #{getFormatStringDate(item.createdAt)}
               a.publication__item-text(href=`/articles/${item.articleId}`) #{item.text}
               p.publication__text-strong #{item.articles[`title`]}
               a.publication__button.button.button--close-item(href=`/my/comments/${item.id}`)

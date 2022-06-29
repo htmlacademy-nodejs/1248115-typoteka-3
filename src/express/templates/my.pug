@@ -20,8 +20,8 @@ block content
     section.main-page__notes.notes
       h1.notes__title Мои записи
       ul.notes__list
-        each item, index in current
-          if (index === current.length - 1)
+        each item, index in currentArticles
+          if (index === currentArticles.length - 1)
             li.notes__list-item.notes__list-item--last
               time.notes__item-time(datetime=`${item.createdAt}`) #{getFormatStringDate(item.createdAt)}
               a.notes__item-text(href=`/articles/${item.id}`) #{item.title}

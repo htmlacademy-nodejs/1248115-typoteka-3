@@ -1,8 +1,6 @@
 'use strict';
 
 const express = require(`express`);
-const http = require(`http`);
-const socket = require(`../lib/socket`);
 const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
@@ -155,9 +153,6 @@ const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
   const app = express();
-  const server = http.createServer(app);
-  const io = socket(server);
-  app.locals.socketio = io;
   app.use(express.json());
   article(app, new DataService(mockDB), new CommentService(mockDB));
   return app;
@@ -175,9 +170,9 @@ describe(`API returns a list of all articles`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns a list of 5 articles`, () => expect(response.body.current.length).toBe(5));
+  test(`Returns a list of 5 articles`, () => expect(response.body.currentArticles.length).toBe(5));
 
-  test(`Last article's title equals "Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин"`, () => expect(response.body.current[4].title).toBe(`Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`));
+  test(`Last article's title equals "Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин"`, () => expect(response.body.currentArticles[4].title).toBe(`Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`));
 
 });
 
@@ -221,7 +216,7 @@ describe(`API creates an article if data is valid`, () => {
 
   test(`Articles count is changed`, () => request(app)
     .get(`/articles`)
-    .expect((res) => expect(res.body.current.length).toBe(6))
+    .expect((res) => expect(res.body.currentArticles.length).toBe(6))
   );
 
 });
@@ -364,7 +359,7 @@ describe(`API correctly deletes an article`, () => {
 
   test(`article count is 4 now`, () => request(app)
     .get(`/articles`)
-    .expect((res) => expect(res.body.current.length).toBe(4))
+    .expect((res) => expect(res.body.currentArticles.length).toBe(4))
   );
 
 });

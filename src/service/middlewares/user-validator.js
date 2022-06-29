@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {DuplicateParams} = require(`../../constants`);
+const {DuplicateParam} = require(`../../constants`);
 const {AsyncKeyValidator} = require(`../../utils/utils`);
 
 const ErrorMessage = {
@@ -18,9 +18,9 @@ const schema = Joi.object({
   firstName: Joi.string().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).messages({
     'string.pattern.base': ErrorMessage.FIRST_NAME
   }).required(),
-  lastName: Joi.string().required().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).messages({
+  lastName: Joi.string().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).messages({
     'string.pattern.base': ErrorMessage.LAST_NAME
-  }),
+  }).required(),
   email: Joi.string().email().required().messages({
     'string.email': ErrorMessage.EMAIL
   }),
@@ -35,4 +35,4 @@ const schema = Joi.object({
   }),
 });
 
-module.exports = new AsyncKeyValidator(schema, DuplicateParams.EMAIL);
+module.exports = new AsyncKeyValidator(schema, DuplicateParam.EMAIL);

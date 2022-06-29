@@ -47,12 +47,10 @@ const RequestObject = {
   PARAMS: `params`
 };
 
-const DuplicateParams = {
+const DuplicateParam = {
   EMAIL: [`email`, `электронного адреса`],
   NAME: [`name`, `категории`]
 };
-
-const ALLOWED_DOMAIN = `http://localhost:8080`;
 
 module.exports = {
   DEFAULT_COMMAND,
@@ -65,7 +63,6 @@ module.exports = {
   HttpMethod,
   Action,
   RequestObject,
-  DuplicateParams,
-  DefaultPort,
-  ALLOWED_DOMAIN
+  DuplicateParam,
+  DefaultPort
 };

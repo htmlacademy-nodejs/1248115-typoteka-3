@@ -6,6 +6,7 @@ const api = require(`../api`).getAPI();
 const authAuthor = require(`../middlewares/auth-author`);
 const {prepareErrors} = require(`../../utils/utils`);
 const csrf = require(`csurf`);
+const {Action} = require(`../../constants`);
 
 const myRouter = new Router();
 const csrfProtection = csrf();
@@ -14,8 +15,8 @@ myRouter.use(authAuthor);
 
 myRouter.get(`/`, asyncHandler(async (req, res) => {
   const {user} = req.session;
-  const {current} = await api.getArticles();
-  res.render(`my`, {current, user});
+  const {currentArticles} = await api.getArticles();
+  res.render(`my`, {currentArticles, user});
 }));
 
 myRouter.get(`/comments`, asyncHandler(async (req, res) => {
@@ -49,6 +50,10 @@ myRouter.get(`/comments/:commentId`, asyncHandler(async (req, res) => {
 
   try {
     await api.removeComment(commentId);
+
+    const io = req.app.locals.socketio;
+    io.emit(`comment:update`);
+
     res.redirect(`/my/comments`);
   } catch (errors) {
     res.status(errors.response.status).send(errors.response.statusText);
@@ -82,7 +87,7 @@ myRouter.post(`/categories/:categoryId`, csrfProtection, asyncHandler(async (req
   };
 
   try {
-    if (body.action === `edit`) {
+    if (body.action === Action.EDIT) {
       const categoryEditData = {
         name: body[`category-${categoryId}`]
       };
