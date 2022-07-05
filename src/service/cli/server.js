@@ -3,7 +3,7 @@
 const express = require(`express`);
 const {HttpCode, ExitCode, API_PREFIX, DefaultPort} = require(`../../constants`);
 const {getLogger} = require(`../lib/logger`);
-const createSequelize = require(`../lib/sequelize`);
+const createConnectionDB = require(`../lib/sequelize`);
 const createRoutes = require(`../api`);
 
 const app = express();
@@ -12,7 +12,7 @@ const logger = getLogger({name: `api`});
 module.exports = {
   name: `--server`,
   async run(args) {
-    const sequelize = createSequelize();
+    const sequelize = createConnectionDB();
 
     app.use(express.json());
     app.use(API_PREFIX, createRoutes(sequelize));

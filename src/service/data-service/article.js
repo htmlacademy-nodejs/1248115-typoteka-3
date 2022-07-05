@@ -213,14 +213,6 @@ class ArticleService {
     return articles.slice(0, limit);
   }
 
-  async drop(id) {
-    const deletedRow = await this._Article.destroy({
-      where: {id}
-    });
-
-    return !!deletedRow;
-  }
-
 }
 
 module.exports = ArticleService;
