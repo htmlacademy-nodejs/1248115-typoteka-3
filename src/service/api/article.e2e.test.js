@@ -172,8 +172,21 @@ describe(`API returns a list of all articles`, () => {
 
   test(`Returns a list of 5 articles`, () => expect(response.body.currentArticles.length).toBe(5));
 
-  test(`Last article's title equals "Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин"`, () => expect(response.body.currentArticles[4].title).toBe(`Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`));
-
+  test(`Category names are "Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин", "За жизнь", "Без рамки", "Разное", "IT",
+      "Ёлки. История деревьев. Ёлки. История деревьев",
+      "Как выучить JS. Лучшие языки программирования",
+      "Лучшие языки программирования. Лучшие языки программирования",
+      "Учим HTML и CSS. Учим HTML и CSS."`,
+  () => expect(response.body.currentArticles.map((it) => it.title)).toEqual(
+      expect.arrayContaining([
+        `Как перестать беспокоиться и начать жить. Золотое сечение — соотношение двух величин`,
+        `Ёлки. История деревьев. Ёлки. История деревьев`,
+        `Как выучить JS. Лучшие языки программирования`,
+        `Лучшие языки программирования. Лучшие языки программирования`,
+        `Учим HTML и CSS. Учим HTML и CSS.`
+      ])
+  )
+  );
 });
 
 describe(`API returns an article with given id`, () => {
